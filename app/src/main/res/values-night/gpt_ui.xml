@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gpt_bg">#212121</color>
+    <color name="gpt_sidebar">#171717</color>
+    <color name="gpt_raised">#303030</color>
+    <color name="gpt_text">#ECECEC</color>
+    <color name="gpt_muted">#B4B4B4</color>
+    <color name="gpt_line">#424242</color>
+    <color name="gpt_action">#ECECEC</color>
+    <color name="gpt_action_on">#171717</color>
+    <color name="gpt_link">#70A5FF</color>
+</resources>

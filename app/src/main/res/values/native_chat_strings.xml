@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="native_chat_brand" translatable="false">DSHA</string>
+    <string name="native_chat_sidebar_open">DSHA，打开侧栏</string>
+    <string name="native_chat_chat_title">对话</string>
+    <string name="native_chat_new_chat">新对话</string>
+    <string name="native_chat_settings">设置</string>
+    <string name="native_chat_welcome">今天想聊点什么？</string>
+    <string name="native_chat_preparing_chat">正在准备对话</string>
+    <string name="native_chat_preparing">正在准备…</string>
+    <string name="native_chat_restart_service">停止并重启服务</string>
+    <string name="native_chat_export_diagnostics">导出诊断日志</string>
+    <string name="native_chat_show_details">查看详情</string>
+    <string name="native_chat_message_hint">给 DSHA 发消息</string>
+    <string name="native_chat_add_attachment">添加附件</string>
+    <string name="native_chat_choose_model">选择模型</string>
+    <string name="native_chat_send">发送</string>
+    <string name="native_chat_sidebar_close">DSHA，关闭侧栏</string>
+    <string name="native_chat_search_chats">搜索会话</string>
+    <string name="native_chat_history">历史会话</string>
+    <string name="native_chat_new_chat_plus">＋ 新对话</string>
+    <string name="native_chat_account_api">头像，账号与 API</string>
+    <string name="native_chat_preparing_accessibility">正在准备</string>
+</resources>

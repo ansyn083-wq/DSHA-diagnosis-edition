@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/gpt_sidebar" />
+    <corners android:radius="@dimen/gpt_composer_radius" />
+</shape>

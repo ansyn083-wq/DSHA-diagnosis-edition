@@ -1,0 +1,12 @@
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="#55FFFFFF">
+    <item>
+        <selector>
+            <item android:state_enabled="false">
+                <shape android:shape="oval"><solid android:color="@color/gpt_muted" /></shape>
+            </item>
+            <item>
+                <shape android:shape="oval"><solid android:color="#2463EB" /></shape>
+            </item>
+        </selector>
+    </item>
+</ripple>

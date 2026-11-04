@@ -1,29 +1,19 @@
 # DSHA 诊断版
 
-基于 DSHA 的 Android 应用。打开即可进入原生聊天首页，运行环境在后台准备。工作区、插件、终端、后台任务和诊断入口可从侧栏打开。
+当前公开源码为 **v1.0.0 / build 215**，应用 ID 为 `dsh.android.client.diagnostics`，Android 11+ / ARM64。
 
-## 使用方法
+- 点击侧栏头像直接打开整合的账号与 API 窗口，不再打开通用设置；侧栏不再单独列出账号/API。
+- 首次未配置用户在服务就绪后获得配置引导，可填写 API Key 或连接账户。已有配置和历史会话保留，通用设置仍可从侧栏进入。
+- 保留问答交互、消息操作与问候语改进；工具执行结果卡片隐藏，但不隐藏问答和授权交互，不删除执行记录。
 
-1. 安装适合设备的诊断版 APK。发行入口为 [GitHub Releases](../../releases)，版本与校验信息见 [v1.0.0 说明](docs/releases/v1.0.0.md)。
-2. 打开「账号与 API」，填写 DeepSeek API Key。模型列表统一显示 API 模型，点击模型名称可切换，模型名称下方的滑杆可调节该模型支持的思考强度。
-3. 如果需要使用 DeepSeek 账号功能，可在同一页面单独登录。头像可作为设置入口，聊天请求使用配置的 API Key。
+[构建与固定输入说明](diagnostic-build/README.md) · [build 215 验证和限制](docs/releases/build215.md) · [许可证](LICENSE) · [上游许可证](LICENSE.upstream) · [第三方声明](THIRD_PARTY_NOTICES.md)
 
-## 安装与适配
+本次提交提供应用源码、测试、构建工具和必要的小型第三方源码；大型离线输入按构建说明恢复。签名私钥、账号/API凭据、用户数据、原始设备日志和旧本地 Git 历史不包含在仓库中。请使用自己的签名材料构建；与已安装诊断版覆盖升级需要相同证书，仓库不提供原私钥。
 
-| 项目 | v1.0.0（构建 207） |
-| --- | --- |
-| 系统 | Android 11 及以上（最低 API 30） |
-| 架构 | ARM64（`arm64-v8a`） |
-| 界面 | 手机使用抽屉，宽屏可展开侧栏 |
-| 安装包 | 可调试的诊断构建，应用 ID 为 `dsh.android.client.diagnostics` |
+Standard 全量 2434 项，0 失败/错误、1 跳过；Low 全量 2434 项，0 失败/错误、74 跳过。Release 构建成功，lint 0 错误、275 警告。**尚未在用户手机上实际安装验收**，不能将上游历史真机记录视为本版验证。
 
-覆盖安装需要旧版诊断包的应用 ID 和签名一致，且旧版构建号不高于 207。诊断版使用独立应用 ID，可与使用其他应用 ID 的官方版本并存。
-
-反馈问题时可以附上系统版本、设备架构、构建号和复现步骤。请先从截图或诊断日志中移除 API Key、登录信息及聊天内容。
+[旧 v1.0.0 Release](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/tag/v1.0.0) 是历史 build207 发布入口，不是 build215 APK。旧发布说明中的文件大小/摘要与实际上传资产不一致，请勿用其验证新版本。此次源码上传不会替换旧 APK。
 
 ## 鸣谢
 
-- [DSH-APP/DSHA](https://github.com/DSH-APP/DSHA) 提供 Android 应用基础与运行环境集成。
-- [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 提供对话和工具运行能力。
-
-许可见 [本仓库 MIT 许可](LICENSE)、[DSHA 上游 MIT 许可](LICENSE.upstream)和[第三方组件声明](THIRD_PARTY_NOTICES.md)。
+基于 [DSH-APP/DSHA](https://github.com/DSH-APP/DSHA) 与 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)。保留上游许可及第三方组件声明。

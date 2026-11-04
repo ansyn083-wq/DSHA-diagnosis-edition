@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gpt_bg">#FFFFFF</color>
+    <color name="gpt_sidebar">#F7F7F8</color>
+    <color name="gpt_raised">#F1F1F1</color>
+    <color name="gpt_text">#171717</color>
+    <color name="gpt_muted">#676767</color>
+    <color name="gpt_line">#E7E7E7</color>
+    <color name="gpt_action">#171717</color>
+    <color name="gpt_action_on">#FFFFFF</color>
+    <color name="gpt_link">#0D6EFD</color>
+
+    <dimen name="gpt_sidebar_width">272dp</dimen>
+    <dimen name="gpt_chat_max_width">800dp</dimen>
+    <dimen name="gpt_form_max_width">760dp</dimen>
+    <dimen name="gpt_touch_min">48dp</dimen>
+    <dimen name="gpt_radius">16dp</dimen>
+    <dimen name="gpt_radius_large">24dp</dimen>
+    <dimen name="gpt_composer_radius">26dp</dimen>
+</resources>

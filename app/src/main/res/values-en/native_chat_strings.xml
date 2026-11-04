@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="native_chat_sidebar_open">DSHA, open sidebar</string>
+    <string name="native_chat_chat_title">Chat</string>
+    <string name="native_chat_new_chat">New chat</string>
+    <string name="native_chat_settings">Settings</string>
+    <string name="native_chat_welcome">What would you like to talk about today?</string>
+    <string name="native_chat_preparing_chat">Preparing chat</string>
+    <string name="native_chat_preparing">Preparing…</string>
+    <string name="native_chat_restart_service">Stop and restart service</string>
+    <string name="native_chat_export_diagnostics">Export diagnostic logs</string>
+    <string name="native_chat_show_details">Show details</string>
+    <string name="native_chat_message_hint">Message DSHA</string>
+    <string name="native_chat_add_attachment">Add attachment</string>
+    <string name="native_chat_choose_model">Choose model</string>
+    <string name="native_chat_send">Send</string>
+    <string name="native_chat_sidebar_close">DSHA, close sidebar</string>
+    <string name="native_chat_search_chats">Search chats</string>
+    <string name="native_chat_history">Chats</string>
+    <string name="native_chat_new_chat_plus">＋ New chat</string>
+    <string name="native_chat_account_api">Profile picture, account and API</string>
+    <string name="native_chat_preparing_accessibility">Preparing</string>
+</resources>

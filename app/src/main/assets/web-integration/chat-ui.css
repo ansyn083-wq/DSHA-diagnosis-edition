@@ -1,0 +1,133 @@
+/* App-owned presentation over the locked DSH/mobile semantic markers.
+   Never hide tool approvals, messages, model configuration or attachments. */
+html[data-dsha-chat-ui] {
+  --chat-bg: #fff;
+  --chat-panel: #f7f7f8;
+  --chat-bubble: #f0f0f0;
+  --chat-fg: #171717;
+  --chat-muted: #676767;
+  --chat-line: #e7e7e7;
+}
+/* The host declares its palette on <body>; a token set on <html> would be
+   shadowed by those declarations, so map the aliases on <body> itself. */
+html[data-dsha-chat-ui] body {
+  --dsw-alias-bg-base: var(--chat-bg);
+  --dsw-alias-bg-layer-1: var(--chat-panel);
+  --dsw-alias-bg-layer-2: var(--chat-bubble);
+  --dsw-alias-border-l1: var(--chat-line);
+  --dsw-alias-label-primary: var(--chat-fg);
+  --dsw-alias-label-secondary: var(--chat-muted);
+  --dsw-alias-state-business-primary: var(--chat-fg);
+}
+html[data-dsha-chat-ui][data-ds-dark-theme],
+html[data-dsha-chat-ui]:has(body[data-ds-dark-theme]) {
+  --chat-bg: #212121;
+  --chat-panel: #171717;
+  --chat-bubble: #303030;
+  --chat-fg: #ececec;
+  --chat-muted: #b4b4b4;
+  --chat-line: #424242;
+  color-scheme: dark;
+}
+html[data-dsha-chat-ui] body {
+  background: var(--chat-bg) !important;
+  color: var(--chat-fg);
+  font-family: system-ui, -apple-system, "Noto Sans", sans-serif;
+}
+html[data-dsha-chat-ui] [data-mobile-nav="frame"],
+html[data-dsha-chat-ui] [data-dsh-frame],
+html[data-dsha-chat-ui] [data-phase] header {
+  background-color: var(--chat-bg) !important;
+  color: var(--chat-fg);
+}
+html[data-dsha-chat-ui] [data-phase] header {
+  border-bottom-color: transparent;
+  min-height: 52px;
+}
+html[data-dsha-chat-ui] [data-pane="sidebar"] {
+  background: var(--chat-panel) !important;
+  border-color: var(--chat-line) !important;
+}
+html[data-dsha-chat-ui] [data-composer-card] {
+  box-sizing: border-box;
+  max-width: min(800px, calc(100% - 24px)) !important;
+  margin-inline: auto !important;
+  border: 1px solid var(--chat-line) !important;
+  border-radius: 26px !important;
+  background: var(--chat-bubble) !important;
+  box-shadow: none !important;
+  color: var(--chat-fg);
+  transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
+}
+html[data-dsha-chat-ui] [data-composer-input] {
+  color: var(--chat-fg) !important;
+  font-size: max(16px, var(--dsh-content-font-size, 16px));
+  line-height: 1.55;
+  min-height: 28px;
+  overflow-wrap: anywhere;
+}
+html[data-dsha-chat-ui] [data-phase] [class*="_userStack"] {
+  max-width: min(800px, 88%) !important;
+  margin-left: auto;
+}
+html[data-dsha-chat-ui] [data-phase] [class*="_userStack"] [class*="_bubble"] {
+  background: var(--chat-bubble) !important;
+  border: 0 !important;
+  border-radius: 24px !important;
+  padding: 12px 18px;
+  color: var(--chat-fg) !important;
+  max-width: 100% !important;
+}
+html[data-dsha-chat-ui] [data-chat-message-list],
+html[data-dsha-chat-ui] [data-phase] [class*="_scrollBody"] > [class*="_content"] {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 800px;
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+html[data-dsha-chat-ui] [data-phase] pre {
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: 14px;
+}
+[data-dsha-chat-settings] {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: 0 0 44px; width: 44px; height: 44px; padding: 10px;
+  margin-left: auto; border: 0; border-radius: 50%;
+  color: var(--chat-fg); background: transparent; cursor: pointer;
+}
+[data-dsha-chat-settings]:hover {background: var(--chat-bubble);}
+[data-dsha-chat-settings]:focus-visible,
+[data-dsha-chat-draft] button:focus-visible {outline: 2px solid var(--chat-fg); outline-offset: 2px;}
+[data-dsha-chat-draft] {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  padding: 8px 12px; margin: 0 8px 8px;
+  border-radius: 16px; background: var(--chat-panel); color: var(--chat-fg);
+  font-size: 13px; line-height: 1.5;
+}
+[data-dsha-chat-draft] span {flex: 1 1 120px; overflow-wrap: anywhere;}
+[data-dsha-chat-draft] button {
+  min-height: 44px; border: 1px solid var(--chat-line); border-radius: 18px;
+  padding: 8px 12px; background: var(--chat-bg); color: var(--chat-fg); cursor: pointer;
+}
+/* Keep the host's 1024px breakpoint and real collapsed state. CSS must not
+   expose a collapsed rail whose React tree does not contain history/search. */
+@media (prefers-reduced-motion: reduce) {
+  html[data-dsha-chat-ui] [data-composer-card] {transition: none !important;}
+}
+@media (max-width: 760px) {
+  html[data-dsha-chat-ui] [data-composer-card] {
+    max-width: calc(100% - 16px) !important;
+  }
+  html[data-dsha-chat-ui] [data-chat-message-list],
+  html[data-dsha-chat-ui] [data-phase] [class*="_scrollBody"] > [class*="_content"] {
+    padding-inline: 12px;
+  }
+}
+@media (min-width: 761px) and (max-width: 1023px) {
+  html[data-dsha-chat-ui] [data-chat-message-list],
+  html[data-dsha-chat-ui] [data-phase] [class*="_scrollBody"] > [class*="_content"] {
+    max-width: 760px;
+  }
+}

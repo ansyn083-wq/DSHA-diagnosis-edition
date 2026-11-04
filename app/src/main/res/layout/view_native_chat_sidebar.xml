@@ -1,0 +1,65 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/native_chat_sidebar"
+    android:layout_width="@dimen/gpt_sidebar_width" android:layout_height="match_parent"
+    android:layout_gravity="start" android:orientation="vertical"
+    android:background="@color/gpt_bg" android:visibility="gone"
+    android:clickable="true" android:paddingStart="12dp" android:paddingEnd="12dp">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="64dp"
+        android:gravity="center_vertical">
+        <Button android:id="@+id/native_chat_sidebar_close" style="@style/Widget.GPT.Button.Text"
+            android:layout_width="0dp" android:layout_weight="1" android:layout_height="48dp"
+            android:gravity="start|center_vertical" android:paddingStart="12dp"
+            android:text="@string/native_chat_brand" android:textSize="21sp" android:textStyle="bold"
+            android:contentDescription="@string/native_chat_sidebar_close" />
+        <ImageButton android:id="@+id/native_chat_search"
+            android:layout_width="48dp" android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_ui_search" app:tint="@color/gpt_text"
+            android:contentDescription="@string/native_chat_search_chats" />
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatEditText android:id="@+id/native_chat_filter"
+        android:layout_width="match_parent" android:layout_height="48dp"
+        android:background="@drawable/gpt_surface_input" android:visibility="gone"
+        android:hint="@string/native_chat_search_chats" android:inputType="text" android:maxLines="1"
+        android:imeOptions="actionDone" android:textSize="14sp"
+        android:textColor="@color/gpt_text" android:textColorHint="@color/gpt_muted" />
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:clipToPadding="false">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout android:id="@+id/native_chat_feature_rows"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" />
+            <Space android:layout_width="match_parent" android:layout_height="12dp" />
+            <TextView android:id="@+id/native_chat_history_label"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:paddingStart="12dp" android:paddingTop="8dp" android:paddingBottom="6dp"
+                android:text="@string/native_chat_history" android:textSize="13sp" android:textColor="@color/gpt_muted" />
+            <LinearLayout android:id="@+id/native_chat_history_rows"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" />
+            <TextView android:id="@+id/native_chat_history_status"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingBottom="10dp"
+                android:textColor="@color/gpt_muted" android:textSize="13sp" />
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:gravity="center_vertical" android:paddingStart="8dp" android:paddingEnd="8dp"
+        android:paddingTop="8dp" android:paddingBottom="12dp">
+        <Button android:id="@+id/native_chat_new" style="@style/Widget.GPT.Button.Primary"
+            android:layout_width="wrap_content" android:layout_height="48dp"
+            android:background="@drawable/gpt_chat_new" android:textColor="#FFFFFF"
+            android:text="@string/native_chat_new_chat_plus" />
+        <Space android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+        <ImageButton android:id="@+id/native_chat_avatar"
+            android:layout_width="48dp" android:layout_height="48dp"
+            android:background="@drawable/gpt_avatar_circle" android:clipToOutline="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless" android:scaleType="center"
+            android:src="@drawable/ic_native_chat_account" android:contentDescription="@string/native_chat_account_api" />
+    </LinearLayout>
+</LinearLayout>

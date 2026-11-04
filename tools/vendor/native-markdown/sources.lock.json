@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "component": "ru.noties:jlatexmath-android:0.2.0",
+  "upstream": "https://github.com/noties/jlatexmath-android",
+  "tag": "v0.2.0",
+  "commit": "cc2a83dcf695028b5588f91a90734d94eb5bd02b",
+  "archive": "jlatexmath-android-v0.2.0.zip",
+  "sourceUrl": "https://codeload.github.com/noties/jlatexmath-android/zip/refs/tags/v0.2.0",
+  "sha256": "b0068f3bbf3ae42951b8df49751f851884f1b0a7bf85e377c214c64dcac8ce83",
+  "bytes": 2400601,
+  "modified": false,
+  "license": "GPL-2.0-or-later WITH upstream independent-module linking exception",
+  "mavenSourceUrl": "https://repo.maven.apache.org/maven2/ru/noties/jlatexmath-android/0.2.0/jlatexmath-android-0.2.0-sources.jar",
+  "mavenSourceSha256": "e3bccfd6fcc38b0fc85307278e5c9024fd6710311fa172790d2629467670b7cc",
+  "matchingMavenJavaSources": 182,
+  "matchingPackagedAssets": 77,
+  "aarSha256": "b16824328d45ed86892f7f8aa74a542fc361b8a94004de8ca5ae86113b78a89f"
+}

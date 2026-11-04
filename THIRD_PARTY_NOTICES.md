@@ -42,6 +42,8 @@
 - Termux terminal-view / terminal-emulator 0.118.0 的 Apache-2.0 例外及全文随 `assets/licenses/Termux-terminal-Apache-2.0.txt` 保存；不将其声明扩展到整个上游工程。
 - Gson 2.13.1：Apache-2.0；Bouncy Castle bcprov-jdk15to18 1.85.2：上游许可全文随 `assets/licenses` 保存。版本与 JAR 摘要见 `tools/backup-dependencies.lock.json`，构建执行 `verifyBackupDependencies`。
 - SnakeYAML 2.4（Apache-2.0）：固定官方 Maven Central JAR/POM 与 `snakeyaml-2.4` 源码标签，使用宿主 data-only SafeConstructor 投影凭据中的本机连接字段。许可原文为 `assets/licenses/snakeyaml-LICENSE.txt`，Java 8 类文件及 Android FIELD 路径见 `docs/audits/build156/snakeyaml-official-artifacts.json`；不由静态兼容声明推导旧设备验收完成。
+- 原生 Markdown 使用 Markwon **4.6.2**（Apache-2.0，https://github.com/noties/Markwon/tree/v4.6.2），CommonMark Java / GFM tables **0.13.0**（BSD-2-Clause，https://github.com/commonmark/commonmark-java/tree/commonmark-parent-0.13.0）。原许可保留在 `assets/licenses/Markwon-Apache-2.0.txt` 和 `commonmark-LICENSE.txt`；不启用 HTML 与网络图片加载插件。
+- 公式使用未修改的 `ru.noties:jlatexmath-android:0.2.0`（https://github.com/noties/jlatexmath-android/tree/v0.2.0）。上游 GPL-2.0-or-later 及独立模块链接例外完整保存在 `assets/licenses/jlatexmath-LICENSE.txt`，GPL 全文为 `jlatexmath-COPYING.txt`。该例外不改变库及其字体的许可；随 AAR 原样打包 `assets/org/scilab/forge/jlatexmath/fonts/licences/` 中的 OFL、Knuth 和 dsrom 字体许可。固定 Maven 构件校验见 `gradle/verification-metadata.xml`，本地使用不修改该库。完整对应源码、字体及构建脚本保存在 `tools/vendor/native-markdown/jlatexmath-android-v0.2.0.zip`，精确摘要见同目录 `sources.lock.json`；APK 发布需同处提供包含该目录的完整源码包。
 - Low 的 GeckoView 143.0.20251003115653 为 MPL-2.0，来自 Mozilla Maven；保留相应声明。兼容版最低 API 23，不表示所有旧设备已经验收。
 - Ubuntu 软件包各自遵循其许可；包内 `/usr/share/doc` 与 common-licenses 保留版权信息。根环境仍为 Ubuntu 24.04 arm64，DSHA 基础环境身份 10。
 - node-semver 7.8.1 为 ISC，完整许可随 `assets/plugin-semver.cjs` 提供。
@@ -53,11 +55,16 @@
 - `com.android.tools:desugar_jdk_libs:2.0.4`
 - `com.google.android.material:material:1.11.0`
 - `com.google.code.gson:gson:2.13.1`
+- `com.squareup.okhttp3:okhttp:4.12.0`
 - `com.termux.termux-app:terminal-view:0.118.0`
 - `dev.rikka.shizuku:api:12.2.0`
 - `dev.rikka.shizuku:api:13.1.5`
 - `dev.rikka.shizuku:provider:12.2.0`
 - `dev.rikka.shizuku:provider:13.1.5`
+- `io.noties.markwon:core:4.6.2`
+- `io.noties.markwon:ext-latex:4.6.2`
+- `io.noties.markwon:ext-tables:4.6.2`
+- `io.noties.markwon:inline-parser:4.6.2`
 - `org.bouncycastle:bcprov-jdk15to18:1.85.2`
 - `org.mozilla.geckoview:geckoview-arm64-v8a:143.0.20251003115653`
 - `org.yaml:snakeyaml:2.4`
