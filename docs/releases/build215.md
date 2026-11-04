@@ -17,7 +17,8 @@
 
 首次完整Android运行每版有2项失败，定位为缓存状态翻译模板歧义和旧中文硬编码断言。修正模板注册并增加双语言首页检查后，Standard/Low各17项定向复验通过（原7项状态往返测试未改），最终完整重跑已成功。失败与环境重试日志保留，不声称一次连续全绿。
 
-APK：DSHA-diagnostic-v1.0.0-build215-arm64.apk
+APK：[DSHA-diagnostic-v1.0.0-build215-arm64.apk](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/download/v1.0.0build215/DSHA-diagnostic-v1.0.0-build215-arm64.apk)
+发布页面：[v1.0.0build215](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/tag/v1.0.0build215)
 大小：294449027字节
 SHA256：92e14c071776d1f6e0d651801a6129b64650597d457ea20953a20afa6e743656
 
@@ -25,4 +26,4 @@ SHA256：92e14c071776d1f6e0d651801a6129b64650597d457ea20953a20afa6e743656
 
 本仓库在原公开提交历史上追加经筛选的源码快照，不包含原开发历史。排除721个历史证据文件并脱敏旧文档中的本机路径；应用源码、测试与构建脚本保持冻结版本字节。原公开LICENSE、LICENSE.upstream和v1.0.0历史发布文档保留，第三方声明补充新增依赖。上游星标图工作流仅保留手动触发，不新增周期性写入。
 
-上述APK摘要仅标识已验证构建产物，不表示GitHub Release已上传该APK。实体手机登录、真实API对话、覆盖升级和界面验收仍未完成。源码不含大型离线输入或原签名私钥，构建方法及固定输入恢复见[诊断版构建说明](../../diagnostic-build/README.md)。
+上述APK已上传至GitHub Release；发布资产的文件大小与SHA-256均与已验证构建产物一致。实体手机登录、真实API对话、覆盖升级和界面验收仍未完成。源码不含大型离线输入或原签名私钥，构建方法及固定输入恢复见[诊断版构建说明](../../diagnostic-build/README.md)。
