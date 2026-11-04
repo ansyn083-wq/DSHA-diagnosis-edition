@@ -11,7 +11,7 @@ concurrency:
 jobs:
   source:
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -40,15 +40,66 @@ jobs:
           python3 tools/check-source-hygiene.py
           python3 tools/check-ui-i18n.py
           python3 tools/check-document-links.py
-      - name: Isolated source and protocol regressions
-        run: python3 tools/run-host-tests.py --stage fast
-      - name: Android Java and both flavor unit tests without offline package generation
+      - name: Restore source-pinned upstream runtime inputs
+        run: |
+          python3 - <<'PYTHON'
+          import hashlib, os, runpy, shutil, urllib.request, zipfile
+          from pathlib import Path
+          assets = runpy.run_path('tools/ci-assets.py')
+          archive = Path(os.environ['RUNNER_TEMP']) / 'dsha-upstream-source.zip'
+          url = 'https://github.com/DSH-APP/DSHA/releases/download/v0.2.1-rc.2/DSHA-0.2.1-rc.2-20261022.2100-source.zip'
+          with urllib.request.urlopen(url, timeout=120) as response, archive.open('wb') as output:
+              shutil.copyfileobj(response, output)
+          if assets['digest'](archive) != 'ef134fe8713bfa4d6cf3bdea883be1591246d4b78ace16bd924f6d739188425a':
+              raise ValueError('CI_UPSTREAM_SOURCE_DIGEST')
+          with zipfile.ZipFile(archive) as source:
+              for name in sorted(assets['allowed']()):
+                  # Diagnostic rootfs uses the exact recovery bytes, not the legacy main rootfs.
+                  member = 'tools/recovery-runtime/archives/recovery-rootfs.bin' if name == 'app/src/main/assets/offline-rootfs.bin' else name
+                  target = assets['bounded'](name)
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  with source.open(member) as incoming, target.open('wb') as output:
+                      shutil.copyfileobj(incoming, output)
+          assets['verify_sources']()
+          PYTHON
+          python3 tools/prepare-test-runtime.py
+      - name: Prepare source-locked Android and host toolchain layout
         run: |
           platform=$(python3 tools/ci-toolchain.py --field androidPlatform)
           buildtools=$(python3 tools/ci-toolchain.py --field buildTools)
-          sdkmanager "platforms;$platform" "build-tools;$buildtools"
+          ndk=$(python3 tools/ci-toolchain.py --field ndk)
+          sdkmanager "platforms;$platform" "build-tools;$buildtools" "ndk;$ndk"
+          toolchains="$RUNNER_TEMP/dsha-toolchains"
+          mkdir -p "$toolchains/gradle-user-home/caches"
+          ln -s "$ANDROID_HOME" "$toolchains/android-sdk"
+          ln -s "$JAVA_HOME" "$toolchains/jdk-17"
+          echo "DSHA_TOOLCHAINS=$toolchains" >> "$GITHUB_ENV"
+          echo "GRADLE_USER_HOME=$toolchains/gradle-user-home" >> "$GITHUB_ENV"
+      - name: Android Java and both flavor unit tests with verified runtime fixtures
+        run: |
           chmod +x gradlew
-          ./gradlew :app:testStandardDebugUnitTest :app:testLowDebugUnitTest -x :app:prepareStandardAssets -x :app:prepareRecoveryAssets --no-daemon --max-workers=2
+          ./gradlew :app:testStandardDebugUnitTest :app:testLowDebugUnitTest --no-daemon --max-workers=2
+      - name: Prepare independently pinned host annotation dependency
+        run: |
+          python3 - <<'PYTHON'
+          import hashlib, os, urllib.request, xml.etree.ElementTree as ET
+          from pathlib import Path
+          name = 'annotation-jvm-1.9.1.jar'
+          root = ET.parse('gradle/verification-metadata.xml').getroot()
+          ns = {'v': root.tag.split('}')[0][1:]}
+          component = root.find(".//v:component[@group='androidx.annotation'][@name='annotation-jvm'][@version='1.9.1']", ns)
+          expected = component.find("v:artifact[@name='" + name + "']/v:sha256", ns).attrib['value']
+          url = 'https://dl.google.com/dl/android/maven2/androidx/annotation/annotation-jvm/1.9.1/' + name
+          with urllib.request.urlopen(url, timeout=60) as response:
+              data = response.read()
+          if hashlib.sha256(data).hexdigest() != expected:
+              raise ValueError('CI_HOST_ANNOTATION_DIGEST')
+          target = Path(os.environ['GRADLE_USER_HOME']) / 'caches/modules-2/files-2.1/androidx.annotation/annotation-jvm/1.9.1' / hashlib.sha1(data).hexdigest() / name
+          target.parent.mkdir(parents=True, exist_ok=True)
+          target.write_bytes(data)
+          PYTHON
+      - name: Isolated source and protocol regressions
+        run: python3 tools/run-host-tests.py --stage fast --toolchain-root "$DSHA_TOOLCHAINS" --jdk "$JAVA_HOME" --mobile-upstream tools/mobile-plugin-upstream/lib
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
