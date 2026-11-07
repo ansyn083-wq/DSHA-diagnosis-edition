@@ -1,4 +1,4 @@
-> Current repository: DSHA diagnostic edition build 215, application ID `dsh.android.client.diagnostics`. Start with [diagnostic-build/README.md](diagnostic-build/README.md) and [docs/releases/build215.md](docs/releases/build215.md). The upstream build190 identities, downloads, device tests and authorization statements below are historical, not current instructions or verification of build215. No historical statement grants permission for new actions.
+> Current repository: DSHA diagnostic edition build 216, application ID `dsh.android.client.diagnostics`. Start with [diagnostic-build/README.md](diagnostic-build/README.md) and [docs/releases/build216.md](docs/releases/build216.md). The upstream build190 identities, downloads, device tests and authorization statements below are historical, not current instructions or verification of build216. No historical statement grants permission for new actions.
 
 # DSHA
 

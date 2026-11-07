@@ -95,7 +95,7 @@ test('the upstream version gate still rejects each original stale wrapper declar
 });
 
 
-test('all eight signed wrappers activate with real 0.2.1 services; actual MCP and Auto lifecycles dispose cleanly',async()=>{
+for (const androidWeb of [false, true]) test(`signed wrappers preserve tool readiness and cleanup (Android Web: ${androidWeb})`,async()=>{
   process.env.DSHA_BUILTIN_TEST_RUNTIME = runtime;
   await import('./fixtures/builtin-host-hooks.mjs');
   const load = async name => import(pathToFileURL(runtimeRequire.resolve(name)));
@@ -116,13 +116,16 @@ test('all eight signed wrappers activate with real 0.2.1 services; actual MCP an
   assert.ok(owned.startsWith(resolve('app/build')+sep),'owned cleanup must remain below app/build');
   const ctx = new Context(), routes = [], fibers = [];
   let llmRequests = 0;
-  const oldGeneration = process.env.DSHA_WEB_GENERATION;
-  delete process.env.DSHA_WEB_GENERATION; // no application activity file outside the owned fixture
+  const oldEnvironment = ["DSHA_STARTUP_PROFILE", "DSHA_WEB_GENERATION"].map(key => [key, process.env[key]]);
+  process.env.DSHA_STARTUP_PROFILE = 'web';
+  if (androidWeb) process.env.DSHA_WEB_GENERATION = '1';
+  else delete process.env.DSHA_WEB_GENERATION;
   try {
     // Controlled host carriers own no socket, model credentials, or user Session.
     ctx.provide('webServer',{port:41821,register(route){routes.push(route);return()=>{routes.splice(routes.indexOf(route),1);};}});
     ctx.provide('connection',{requestRejection(){return 401;},authorizeIndex(_req,res){res.writeHead(401);res.end();return false;}});
     ctx.provide('sessions',{list(){return [];}});
+    ctx.provide('profileContext', {name:'web'});
     ctx.provide('shell',{sandboxMode:'danger-full-access'});
     ctx.provide('approval',{config:{policy:'never'},overrideOf(){return 'never';}});
     ctx.provide('llm',{stream(){llmRequests++;throw Error('No model request is permitted by this fixture');}});
@@ -148,12 +151,22 @@ test('all eight signed wrappers activate with real 0.2.1 services; actual MCP an
     let next=0;
     const passthrough=await ctx.waterfall(null,'tools/pre-execute',{name:'fixture',signal:new AbortController().signal},async()=>{next++;return {kind:'allow'};});
     assert.equal(passthrough.kind,'allow');assert.equal(next,1);assert.equal(llmRequests,0);
+    if (androidWeb) {
+      assert.equal(ctx.tools.schemas().filter(tool=>/^mcp__dsha-(android|vscreen)__/.test(tool.name)).length,0,
+        'Android Web must finish boot without either MCP connection');
+      await Promise.all([
+        ctx.serial(ctx,'agent/created',{source:'fresh'}),
+        ctx.serial(ctx,'agent/created',{source:'resume'})
+      ]);
+    }
     const schemas=ctx.tools.schemas().map(tool=>tool.name);
-    assert.equal(schemas.filter(name=>name.startsWith('mcp__dsha-android__')).length,6);
+    assert.equal(schemas.filter(name=>name.startsWith('mcp__dsha-android__')).length,8);
     assert.equal(schemas.filter(name=>name.startsWith('mcp__dsha-vscreen__')).length,15);
     assert.equal(ctx.computerUse.providerName,'dsha-android');
     const assembly=await ctx.systemPrompt.assemble();
     assert.ok(assembly.sections.some(section=>section.name==='dsh:device-shell-guide'));
+    for (const name of ['dsha-android','dsha-vscreen'])
+      assert.ok(assembly.sections.some(section=>section.name===`mcp:${name}` && section.text.includes(name)));
     assert.ok(routes.some(route=>route.path==='/api/mobile-nav.session.delete'));
     const restore=routes.find(route=>route.path==='/__dsha/browser-origin-restore');assert.ok(restore);
     let denied;
@@ -164,7 +177,10 @@ test('all eight signed wrappers activate with real 0.2.1 services; actual MCP an
     assert.equal(routes.length,0);assert.equal(llmRequests,0);
   } finally {
     await ctx.fiber.dispose();
-    if(oldGeneration===undefined)delete process.env.DSHA_WEB_GENERATION;else process.env.DSHA_WEB_GENERATION=oldGeneration;
+    for (const [key, value] of oldEnvironment) {
+      if (value===undefined) delete process.env[key];
+      else process.env[key]=value;
+    }
     delete process.env.DSHA_BUILTIN_TEST_RUNTIME;
     await rm(owned,{recursive:true,force:true});
   }

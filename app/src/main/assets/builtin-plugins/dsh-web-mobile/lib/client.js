@@ -3969,22 +3969,13 @@ exports.LAYOUT_CSS = `/* ---------- mobile-only layout (narrow viewport AND touc
   @keyframes dsh-web-mobile-panel-ghost-out {
     to { opacity: .72; transform: translateX(100%); }
   }
-  /* ---------- 长会话：消息块 content-visibility（2026-10-07 实测） ----------
-     店主报「对话越长、切换/开侧边栏越卡」。真宿主取证（最长会话，中心列 ~6000 节点）：
-       · 点抽屉那一拍 = 236ms longtask / 3 条（短会话 0ms），且随会话长度暴涨；
-       · CPU profile：「(program)」（样式计算/布局/绘制）1216ms、宿主自己的
-         「getAnimations({subtree:true})」 75ms、宿主 JS 个位数 ms、**插件 JS ≈ 8ms**
-         ⇒ 代价是「大 DOM 的布局/绘制」，不是插件逻辑。
-     这里让会话滚动区里的**消息块**自己跳过屏外内容的布局/绘制（窄选择器：只命中
-     滚动区的直接子块，本次实测 3 个；宿主的 scrollBody 自身用 :not 排除）：
-       · 运行时注入 A/B（同一会话，每臂 n=3）：点抽屉长任务 关 = 247/62/143ms
-         （复测 386/206）→ 开 = **57/61/70ms**（紧致一条 ~60ms 带）；
-       · 「contain-intrinsic-size: auto 320px」：auto 表示「渲染过就用记住的真实高度」，
-         只有从未渲染过的块才吃 320px 兜底 ⇒ 本次实测 scrollHeight 17699 前后不变、
-         置顶/置底位置正常，没有滚动跳变。 */
-  [data-mobile-nav="frame"] [class*="scrollBody"] [class*="_scroll"]:not([class*="scrollBody"]) > * {
+  /* 长会话的消息列通常贯穿整个滚动区，按整列跳过绘制没有作用。
+     为较早的消息行独立保留高度，保留历史锚点和浏览器查找。
+     最后十二行和正在折叠的行由宿主正常测量。 */
+  [data-mobile-nav="frame"] [data-chat-flow] > [data-slot="conversation.chat.flow"]
+    > [data-chat-flow-key]:nth-last-child(n+13):not([hidden]):not([data-chat-motion]) {
     content-visibility: auto;
-    contain-intrinsic-size: auto 320px;
+    contain-intrinsic-size: auto 100px;
   }
   /* ---------- 文档预览的代码行：屏外行跳过布局/绘制（2026-10-09 实测） ----------
      报障场景：打开一份 13.4k 行文件的文档预览（DOM 23,662 节点）后整页卡死。

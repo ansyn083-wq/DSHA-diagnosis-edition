@@ -198,6 +198,11 @@
       "executable": false
     },
     {
+      "asset": "android-mcp-start.mjs",
+      "target": "usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/dsha-android-mcp-start.mjs",
+      "executable": false
+    },
+    {
       "asset": "builtin-plugins/dsh-computer-use-android/package.json",
       "target": "root/dsha-computer-use-android/package.json",
       "executable": false

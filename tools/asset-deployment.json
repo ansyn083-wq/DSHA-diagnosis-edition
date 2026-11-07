@@ -8,6 +8,7 @@
     "adb-shell.py",
     "adb-wheels.lock.json",
     "agent-preset-pending-patch.json",
+    "android-mcp-start.mjs",
     "auto-review-native-disabled-patch.json",
     "backup-engine.py",
     "backup-plugin-graph.py",

@@ -87,6 +87,18 @@ export function applyMobileClientPatches(bytes) {
 }
 
 /* Floating fallback button (hero / blank phases without a session header).`);
+  // rc2 的滚动列总在视口内；只隔离独立的历史行。
+  replaceRange('  /* ---------- 长会话：消息块 content-visibility',
+    '  /* ---------- 文档预览的代码行：屏外行跳过布局/绘制',
+    `  /* 长会话的消息列通常贯穿整个滚动区，按整列跳过绘制没有作用。
+     为较早的消息行独立保留高度，保留历史锚点和浏览器查找。
+     最后十二行和正在折叠的行由宿主正常测量。 */
+  [data-mobile-nav="frame"] [data-chat-flow] > [data-slot="conversation.chat.flow"]
+    > [data-chat-flow-key]:nth-last-child(n+13):not([hidden]):not([data-chat-motion]) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 100px;
+  }
+`);
   const css = `
   /* DSHA 可见区域边界：原生已消费 IME/systemBars，只读浏览器实际视口。 */
   [aria-modal="true"]:has(> :first-child > :last-child > button):not(:has([role="navigation"])):not(:has([class*="ZuhsRW"])):not([data-shortcut-modal="shortcuts"]),

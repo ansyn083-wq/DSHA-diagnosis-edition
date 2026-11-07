@@ -6,6 +6,8 @@ import {pathToFileURL} from 'node:url';
 const sdk=process.env.DSHA_BUILTIN_TEST_SDK;
 const runtime=process.env.DSHA_BUILTIN_TEST_RUNTIME;
 registerHooks({resolve(specifier,context,nextResolve){
+  if(specifier==='/usr/local/lib/node_modules/@deepseek-ai/dsh/node_modules/dsha-android-mcp-start.mjs')
+    return {url:pathToFileURL(path.resolve('app/src/main/assets/android-mcp-start.mjs')).href,format:'module',shortCircuit:true};
   if(specifier==='dsha-destructive-policy'&&process.env.DSHA_BUILTIN_TEST_POLICY)
     return {url:pathToFileURL(path.resolve(process.env.DSHA_BUILTIN_TEST_POLICY)).href,format:'module',shortCircuit:true};
   if(specifier==='/run/dsha-launcher/bridge-connection.cjs'&&sdk)
