@@ -2,9 +2,9 @@
 
 当前源码为 **v1.0.0 / build 216**，应用 ID 为 `dsh.android.client.diagnostics`，Android 11+ / ARM64。
 
-[下载 build 215 APK](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/download/v1.0.0build215/DSHA-diagnostic-v1.0.0-build215-arm64.apk) · [发布页面](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/tag/v1.0.0build215)
+[下载 build216 APK](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/download/v1.0.0build216/DSHA-diagnostic-v1.0.0-build216-arm64.apk) · [build216 预发布页](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/tag/v1.0.0build216)
 
-已发布的 build215 APK 大小为 294,449,027 字节，SHA-256 为 `92e14c071776d1f6e0d651801a6129b64650597d457ea20953a20afa6e743656`。
+build216 APK 大小为 294,449,101 字节，SHA-256 为 `b9d21d6f05fc9a99ad55d5740d8c584c6657ad0eaf92385d5c73f2b6a31d4088`。
 
 - build216 延后手机操作和虚拟屏的 MCP 初始化，Web 长对话按消息行跳过屏外布局。
 - 点击侧栏头像直接打开整合的账号与 API 窗口，不再打开通用设置；侧栏不再单独列出账号/API。

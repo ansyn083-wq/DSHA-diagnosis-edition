@@ -7,6 +7,10 @@ build216 缩短 Android 工作台就绪前的设备工具启动路径，并优�
 
 ## APK 身份
 
+[下载 build216 APK](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/download/v1.0.0build216/DSHA-diagnostic-v1.0.0-build216-arm64.apk) · [build216 预发布页](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/tag/v1.0.0build216)
+
+GitHub 附件的文件大小和 SHA-256 均与下方已验签的 APK 一致。发布标签 `v1.0.0build216` 对应[构建源码提交 `1cd25cf`](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/commit/1cd25cff9b47acf9cf71c9e046a45abbd16081fb)。
+
 | 字段 | 值 |
 |---|---|
 | 文件名 | `DSHA-diagnostic-v1.0.0-build216-arm64.apk` |

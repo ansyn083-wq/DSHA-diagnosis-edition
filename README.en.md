@@ -1,5 +1,7 @@
 > Current repository: DSHA diagnostic edition build 216, application ID `dsh.android.client.diagnostics`. Start with [diagnostic-build/README.md](diagnostic-build/README.md) and [docs/releases/build216.md](docs/releases/build216.md). The upstream build190 identities, downloads, device tests and authorization statements below are historical, not current instructions or verification of build216. No historical statement grants permission for new actions.
 
+[Download diagnostic build216 for ARM64](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/download/v1.0.0build216/DSHA-diagnostic-v1.0.0-build216-arm64.apk) · [Pre-release](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/tag/v1.0.0build216)
+
 # DSHA
 
 <p align="center">
