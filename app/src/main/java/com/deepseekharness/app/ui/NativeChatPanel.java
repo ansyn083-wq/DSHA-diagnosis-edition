@@ -140,8 +140,9 @@ final class NativeChatPanel {
   private MessageActionBinding displayedActionBinding;
   private final java.util.ArrayList<Integer> displayedRowEnds = new java.util.ArrayList<>();
   private final java.util.ArrayList<View> displayedBodies = new java.util.ArrayList<>();
-  private final NativeChatRenderQueue renderQueue = new NativeChatRenderQueue(
-      task -> main.postDelayed(task, 50), main::removeCallbacks, this::renderTranscript);
+  private final NativeChatRenderQueue renderQueue =
+      new NativeChatRenderQueue(
+          task -> main.postDelayed(task, 50), main::removeCallbacks, this::renderTranscript);
   private String displayedPartial = "";
   private String displayedLiveReasoning = "";
   private Identity identity;
@@ -1658,8 +1659,10 @@ final class NativeChatPanel {
         || !displayedSequences.equals(nextSequences)
         || displayedCanRetry != (details.canRetry() && !retrySuppressed)) {
       boolean sameBinding = actionBinding.equals(displayedActionBinding);
-      int prefix = sameBinding
-          ? NativeChatRenderPlan.prefix(displayed, displayedSequences, next, nextSequences) : 0;
+      int prefix =
+          sameBinding
+              ? NativeChatRenderPlan.prefix(displayed, displayedSequences, next, nextSequences)
+              : 0;
       int keepViews = prefix == 0 ? 0 : displayedRowEnds.get(prefix - 1);
       var previous = displayed;
       var previousSequences = displayedSequences;
@@ -1682,14 +1685,17 @@ final class NativeChatPanel {
         if (entry.assistant()) {
           boolean wasExpanded = expanded.getOrDefault(atSeq, false);
           // 流式入口移交给同一条已保存回复时，保留用户当前的展开选择。
-          if (sameBinding && messageIndex >= previous.size() && liveReasoning.isExpanded()
+          if (sameBinding
+              && messageIndex >= previous.size()
+              && liveReasoning.isExpanded()
               && !entry.reasoning().isBlank()
               && entry.reasoning().equals(displayedLiveReasoning)) wasExpanded = true;
           addReplyDetails(entry, atSeq, wasExpanded);
         }
         View line;
         int pad = Math.round(12 * host.getResources().getDisplayMetrics().density);
-        if (sameBinding && messageIndex < previous.size()
+        if (sameBinding
+            && messageIndex < previous.size()
             && atSeq == NativeChatRenderPlan.sequence(previousSequences, messageIndex)
             && entry.assistant() == previous.get(messageIndex).assistant()
             && entry.text().equals(previous.get(messageIndex).text())) {
@@ -1799,8 +1805,9 @@ final class NativeChatPanel {
         UiText.choose("复制", "Copy"),
         () -> {
           host.getSystemService(android.content.ClipboardManager.class)
-              .setPrimaryClip(android.content.ClipData.newPlainText(
-                  "DSHA", entry.text().isBlank() ? entry.reasoning() : entry.text()));
+              .setPrimaryClip(
+                  android.content.ClipData.newPlainText(
+                      "DSHA", entry.text().isBlank() ? entry.reasoning() : entry.text()));
           android.widget.Toast.makeText(
                   host, UiText.choose("已复制", "Copied"), android.widget.Toast.LENGTH_SHORT)
               .show();
@@ -2045,7 +2052,8 @@ final class NativeChatPanel {
         .show();
   }
 
-  private void addReplyDetails(NativeChatTranscript.Message entry, long sequence, boolean expanded) {
+  private void addReplyDetails(
+      NativeChatTranscript.Message entry, long sequence, boolean expanded) {
     if (entry.turnMillis() >= 0) {
       TextView time = new TextView(host);
       int pad = Math.round(12 * host.getResources().getDisplayMetrics().density);

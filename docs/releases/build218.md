@@ -15,6 +15,8 @@
 
 从修订源码完整编译，使用 JDK17、Gradle9.3.1、SDK37、build-tools36.0.0、NDK26.3.11579264。固定资源与当前运行时配方一致，未复用旧 APK 的 dex。构建未签名 Release 后以诊断版原证书签名；不使用正式版 E7E3 签名身份。
 
+APK 对应构建源码提交 `66ab9130cab3f6eb072e47aaa0cf545db93e0aed`。同步仓库时补齐 4 个新增 Java 文件的格式化登记，并按锁定工具整理 9 个文件的排版；工具确认所有 Java token 保持一致，运行时描述符不变。APK 字节和前述摘要保持原值，GitHub APK 附件待维护者上传。
+
 - `:app:assembleStandardRelease` 通过；Release Lint Vital 无问题。
 - `:app:testStandardDebugUnitTest` 选定 7 类共 52 项通过，零失败、错误或跳过：Transcript 14、RenderPlan 2、RenderQueue 2、Details 8、MessageActions 16、Markdown 8、MarkdownLink 2。
 - 最终 APK 的包名、版本、最低系统、ABI、非调试标记、ZIP CRC、16 KiB ZIP 对齐及证书核验通过。

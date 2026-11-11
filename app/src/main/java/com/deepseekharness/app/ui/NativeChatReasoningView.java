@@ -30,7 +30,9 @@ final class NativeChatReasoningView extends LinearLayout {
     toggle.setPaddingRelative(dp(4), 0, dp(12), 0);
     toggle.setFocusable(true);
     TypedValue background = new TypedValue();
-    if (context.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, background, true))
+    if (context
+        .getTheme()
+        .resolveAttribute(android.R.attr.selectableItemBackground, background, true))
       toggle.setBackgroundResource(background.resourceId);
     arrow = new androidx.appcompat.widget.AppCompatImageView(context);
     arrow.setImageResource(R.drawable.ic_chat_reasoning_chevron);
@@ -80,11 +82,12 @@ final class NativeChatReasoningView extends LinearLayout {
     boolean available = !reasoning.isBlank();
     setVisibility(available ? VISIBLE : GONE);
     arrow.setRotation(expanded ? 90 : 0);
-    toggle.setContentDescription(expanded
-        ? UiText.choose("收起思考过程", "Hide reasoning")
-        : UiText.choose("展开思考过程", "Show reasoning"));
-    ViewCompat.setStateDescription(toggle,
-        expanded ? UiText.choose("已展开", "Expanded") : UiText.choose("已收起", "Collapsed"));
+    toggle.setContentDescription(
+        expanded
+            ? UiText.choose("收起思考过程", "Hide reasoning")
+            : UiText.choose("展开思考过程", "Show reasoning"));
+    ViewCompat.setStateDescription(
+        toggle, expanded ? UiText.choose("已展开", "Expanded") : UiText.choose("已收起", "Collapsed"));
     body.setVisibility(available && expanded ? VISIBLE : GONE);
     String visible = available && expanded ? reasoning : "";
     if (!body.getText().toString().equals(visible)) body.setText(visible);

@@ -101,5 +101,14 @@
   "limitations": [
     "No Android device installation or FPS measurements in this build.",
     "verify-dsh-upgrade-apk.py could not run because the separately npm-installed raw fixture was absent; the pinned runtime recipe and archive match, and all packaged assets were verified against generated inputs."
-  ]
+  ],
+  "builtSourceCommit": "66ab9130cab3f6eb072e47aaa0cf545db93e0aed",
+  "repositorySync": {
+    "formatter": "google-java-format 1.22.0",
+    "registeredFiles": 4,
+    "formattedFiles": 9,
+    "javaTokensPreserved": true,
+    "runtimeDescriptorUnchanged": true,
+    "apkAttachment": "pending maintainer upload"
+  }
 }

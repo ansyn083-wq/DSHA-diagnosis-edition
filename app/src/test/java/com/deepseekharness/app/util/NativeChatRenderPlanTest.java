@@ -6,7 +6,8 @@ import java.util.List;
 import org.junit.Test;
 
 public final class NativeChatRenderPlanTest {
-  @Test public void appendingToLongHistoryKeepsEveryExistingRow() {
+  @Test
+  public void appendingToLongHistoryKeepsEveryExistingRow() {
     var history = new ArrayList<NativeChatTranscript.Message>();
     var sequences = new ArrayList<Long>();
     for (int i = 0; i < 100; i++) {
@@ -20,13 +21,22 @@ public final class NativeChatRenderPlanTest {
     assertEquals(100, NativeChatRenderPlan.prefix(history, sequences, next, nextSequences));
   }
 
-  @Test public void changedDurationRebuildsOnlyLastRowAndShiftedWindowCannotReuseWrongRows() {
+  @Test
+  public void changedDurationRebuildsOnlyLastRowAndShiftedWindowCannotReuseWrongRows() {
     var first = new NativeChatTranscript.Message(false, "Question");
     var reply = new NativeChatTranscript.Message(true, "Reply", "Reasoning", -1);
-    assertEquals(1, NativeChatRenderPlan.prefix(List.of(first, reply), List.of(2L, 3L),
-        List.of(first, new NativeChatTranscript.Message(true, "Reply", "Reasoning", 1200)), List.of(2L, 3L)));
-    assertEquals(0, NativeChatRenderPlan.prefix(List.of(first, reply), List.of(2L, 3L),
-        List.of(reply), List.of(3L)));
-    assertEquals(0, NativeChatRenderPlan.prefix(List.of(reply), List.of(3L), List.of(reply), List.of(9L)));
+    assertEquals(
+        1,
+        NativeChatRenderPlan.prefix(
+            List.of(first, reply),
+            List.of(2L, 3L),
+            List.of(first, new NativeChatTranscript.Message(true, "Reply", "Reasoning", 1200)),
+            List.of(2L, 3L)));
+    assertEquals(
+        0,
+        NativeChatRenderPlan.prefix(
+            List.of(first, reply), List.of(2L, 3L), List.of(reply), List.of(3L)));
+    assertEquals(
+        0, NativeChatRenderPlan.prefix(List.of(reply), List.of(3L), List.of(reply), List.of(9L)));
   }
 }

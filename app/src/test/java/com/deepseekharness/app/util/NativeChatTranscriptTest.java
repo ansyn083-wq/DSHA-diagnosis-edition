@@ -192,11 +192,15 @@ public final class NativeChatTranscriptTest {
   @Test
   public void streamEndBeforeCommitKeepsReasoningVisibleAndAttachesItOnce() {
     NativeChatTranscript chat = reasoningAttempt();
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"assistant-stream","frame":{"type":"end","attemptId":"a","revision":2,"index":1}}
         """);
     assertEquals("Compare options.", chat.partialReasoning());
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"event","event":{"type":"assistant/message","seq":1,"data":{"turn":1,"step":0,
         "message":{"content":[{"type":"text","text":"Answer."}]}}}}
         """);
@@ -207,20 +211,28 @@ public final class NativeChatTranscriptTest {
   @Test
   public void reasoningOnlyToolStepRemainsVisibleUntilFinalAnswer() {
     NativeChatTranscript chat = reasoningAttempt();
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"event","event":{"type":"assistant/message","seq":1,"data":{"turn":1,"step":0,
         "message":{"content":[{"type":"reasoning","text":"Compare options."},
         {"type":"tool-call","name":"lookup"}]}}}}
         """);
     assertEquals("Compare options.", chat.partialReasoning());
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"assistant-stream","frame":{"type":"end","attemptId":"a","revision":2,"index":1}}
         """);
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"assistant-stream","frame":{"type":"start","attemptId":"b","revision":3,"turn":1,"step":1}}
         """);
     assertEquals("Compare options.", chat.partialReasoning());
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"event","event":{"type":"assistant/message","seq":2,"data":{"turn":1,"step":1,
         "message":{"content":[{"type":"text","text":"Found it."}]}}}}
         """);
@@ -231,10 +243,14 @@ public final class NativeChatTranscriptTest {
   @Test
   public void stoppedReasoningOnlyTurnKeepsAReadableMessage() {
     NativeChatTranscript chat = reasoningAttempt();
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"assistant-stream","frame":{"type":"end","attemptId":"a","revision":2,"index":1}}
         """);
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"event","event":{"type":"turn/end","seq":1,"time":2000,
         "data":{"turn":1,"reason":{"kind":"aborted"}}}}
         """);
@@ -247,13 +263,19 @@ public final class NativeChatTranscriptTest {
   @Test
   public void aNewAttemptDoesNotReuseFailedAttemptReasoning() {
     NativeChatTranscript chat = reasoningAttempt();
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"assistant-stream","frame":{"type":"end","attemptId":"a","revision":2,"index":1}}
         """);
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"assistant-stream","frame":{"type":"start","attemptId":"b","revision":3,"turn":1,"step":0}}
         """);
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"event","event":{"type":"assistant/message","seq":1,"data":{"turn":1,"step":0,
         "message":{"content":[{"type":"text","text":"Retried answer."}]}}}}
         """);
@@ -263,10 +285,14 @@ public final class NativeChatTranscriptTest {
   @Test
   public void lateStreamEndAfterTurnEndDoesNotLoseTheStoppedMessage() {
     NativeChatTranscript chat = reasoningAttempt();
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"event","event":{"type":"turn/end","seq":1,"time":2000,"data":{"turn":1}}}
         """);
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"assistant-stream","frame":{"type":"end","attemptId":"a","revision":2,"index":1}}
         """);
     assertEquals("Compare options.", chat.messages().get(0).reasoning());
@@ -277,10 +303,17 @@ public final class NativeChatTranscriptTest {
   @Test
   public void chunkAfterEndIsStillRejected() {
     NativeChatTranscript chat = reasoningAttempt();
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"assistant-stream","frame":{"type":"end","attemptId":"a","revision":2,"index":1}}
         """);
-    assertThrows(IllegalArgumentException.class, () -> apply(chat, """
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            apply(
+                chat,
+                """
         {"type":"assistant-stream","frame":{"type":"chunk","attemptId":"a","revision":3,"index":1,
         "chunk":{"type":"reasoning-delta","text":"invalid"}}}
         """));
@@ -289,10 +322,14 @@ public final class NativeChatTranscriptTest {
   @Test
   public void reasoningOnlyRowsDoNotShiftTheNextMessageActionIdentity() {
     NativeChatTranscript chat = reasoningAttempt();
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"event","event":{"type":"turn/end","seq":1,"time":2000,"data":{"turn":1}}}
         """);
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"event","event":{"type":"user/message","seq":2,
         "data":{"content":[{"type":"text","text":"Next question"}]}}}
         """);
@@ -304,7 +341,9 @@ public final class NativeChatTranscriptTest {
   @Test
   public void snapshotRestoresReasoningOnlyStoppedTurn() {
     NativeChatTranscript chat = new NativeChatTranscript();
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"snapshot","cursor":3,"records":[
         {"event":{"type":"turn/start","seq":1,"time":1000,"data":{"turn":1}}},
         {"event":{"type":"assistant/message","seq":2,"data":{"turn":1,"step":0,
@@ -318,7 +357,9 @@ public final class NativeChatTranscriptTest {
 
   private static NativeChatTranscript reasoningAttempt() {
     NativeChatTranscript chat = new NativeChatTranscript();
-    apply(chat, """
+    apply(
+        chat,
+        """
         {"type":"snapshot","cursor":0,"records":[
           {"event":{"type":"turn/start","seq":0,"time":1000,"data":{"turn":1}}}
         ],"assistantStream":{"revision":1,"activeAttempt":{"attemptId":"a","turn":1,"step":0,

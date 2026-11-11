@@ -252,7 +252,8 @@ public final class NativeChatTranscript {
       startAttempt(frame);
       return;
     }
-    if (attemptEnded || !frame.get("attemptId").getAsString().equals(attempt)
+    if (attemptEnded
+        || !frame.get("attemptId").getAsString().equals(attempt)
         || frame.get("index").getAsInt() != nextChunk) {
       throw new IllegalArgumentException("DSH assistant attempt mismatch");
     }

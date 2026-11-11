@@ -13,10 +13,11 @@ public final class NativeChatRenderQueue {
     this.schedule = schedule;
     this.remove = remove;
     this.render = render;
-    flush = () -> {
-      pending = false;
-      render.run();
-    };
+    flush =
+        () -> {
+          pending = false;
+          render.run();
+        };
   }
 
   public void request(boolean immediate) {

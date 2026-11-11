@@ -98,7 +98,8 @@ public final class NativeChatMessageActionsTest {
 
   @Test
   public void appendingReplyKeepsHistoryViewsAndReasoningExpansion() throws Exception {
-    setReasoningTranscript("""
+    setReasoningTranscript(
+        """
         {"type":"snapshot","cursor":1,"records":[{"event":{"type":"assistant/message","seq":1,
         "data":{"message":{"content":[{"type":"reasoning","text":"Compare options."},
         {"type":"text","text":"First reply."}]}}}}]}
@@ -108,10 +109,13 @@ public final class NativeChatMessageActionsTest {
     reasoning.getChildAt(0).performClick();
     View body = messages.getChildAt(1);
     NativeChatTranscript transcript = (NativeChatTranscript) field("transcript");
-    transcript.apply(JsonParser.parseString("""
+    transcript.apply(
+        JsonParser.parseString(
+                """
         {"type":"event","event":{"type":"assistant/message","seq":2,
         "data":{"message":{"content":[{"type":"text","text":"Second reply."}]}}}}
-        """).getAsJsonObject());
+        """)
+            .getAsJsonObject());
     render();
     assertSame(reasoning, messages.getChildAt(0));
     assertSame(body, messages.getChildAt(1));

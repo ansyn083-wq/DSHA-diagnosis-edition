@@ -7,8 +7,10 @@ public final class NativeChatRenderPlan {
   private NativeChatRenderPlan() {}
 
   public static int prefix(
-      List<NativeChatTranscript.Message> previous, List<Long> previousSequences,
-      List<NativeChatTranscript.Message> next, List<Long> nextSequences) {
+      List<NativeChatTranscript.Message> previous,
+      List<Long> previousSequences,
+      List<NativeChatTranscript.Message> next,
+      List<Long> nextSequences) {
     int count = Math.min(previous.size(), next.size());
     int index = 0;
     while (index < count
