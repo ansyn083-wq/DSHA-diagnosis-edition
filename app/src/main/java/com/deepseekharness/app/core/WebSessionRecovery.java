@@ -34,8 +34,9 @@ final class WebSessionRecovery {
 
   static Result recover(Ports ports) {
     String stage = "READ_RECORD";
+    StoredWebSession.Record saved = null;
     try {
-      var saved = ports.read();
+      saved = ports.read();
       if (!ports.current()) return Result.STALE;
       if (saved == null) {
         ports.diagnostic("NO_SAVED_RECORD");
@@ -69,6 +70,8 @@ final class WebSessionRecovery {
       return adopted ? Result.RESTORED : Result.STALE;
     } catch (Exception unavailable) {
       ports.diagnostic(com.deepseekharness.app.util.SessionDiagnostic.failure(stage, unavailable));
+      if (stage.equals("FIRST_KERNEL_PROOF") || stage.equals("SECOND_KERNEL_PROOF"))
+        return unavailable(ports, saved);
       return Result.UNKNOWN;
     }
   }

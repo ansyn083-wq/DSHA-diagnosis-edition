@@ -134,9 +134,11 @@ public final class WebSessionKernelEvidenceTest {
       }
 
       @Override
-      com.deepseekharness.app.util.WebSessionProof.Process recoveryProcess(int pid) {
-        return new com.deepseekharness.app.util.WebSessionProof.Process(
-            pid, birth, 10001, "web", "7", INSTANCE, "ab".repeat(32), live);
+      ProcessState inspect(int pid) {
+        return new ProcessState(
+            live ? Kind.WEB : Kind.GONE,
+            WebPidIdentity.parse(pid + " (node) S 1 1 1 " + "0 ".repeat(15) + birth + " 0 0", pid),
+            "web");
       }
 
       @Override

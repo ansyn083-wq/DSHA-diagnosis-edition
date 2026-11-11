@@ -104,6 +104,51 @@ public final class WebSessionRecoveryTest {
   }
 
   @Test
+  public void unreadableFirstKernelProofStillChecksForConfirmedExit() {
+    for (boolean exited : new boolean[] {true, false}) {
+      Fixture fixture =
+          new Fixture() {
+            @Override
+            public boolean confirmExited(StoredWebSession.Record record) {
+              calls.add("exit");
+              return exited;
+            }
+          };
+      fixture.deny = true;
+      assertEquals(
+          exited ? WebSessionRecovery.Result.EXITED : WebSessionRecovery.Result.UNKNOWN,
+          WebSessionRecovery.recover(fixture));
+      assertEquals(List.of("read", "compatible", "verify", "exit"), fixture.calls);
+    }
+  }
+
+  @Test
+  public void unreadableSecondKernelProofStillChecksForConfirmedExit() {
+    for (boolean exited : new boolean[] {true, false}) {
+      Fixture fixture =
+          new Fixture() {
+            @Override
+            public boolean verify(StoredWebSession.Record record) throws Exception {
+              boolean valid = super.verify(record);
+              if (probes == 2) throw new java.io.IOException("PROC_DENIED");
+              return valid;
+            }
+
+            @Override
+            public boolean confirmExited(StoredWebSession.Record record) {
+              calls.add("exit");
+              return exited;
+            }
+          };
+      assertEquals(
+          exited ? WebSessionRecovery.Result.EXITED : WebSessionRecovery.Result.UNKNOWN,
+          WebSessionRecovery.recover(fixture));
+      assertEquals(
+          List.of("read", "compatible", "verify", "http", "verify", "exit"), fixture.calls);
+    }
+  }
+
+  @Test
   public void confirmedExitCannotOverrideAConcurrentStop() {
     Fixture fixture =
         new Fixture() {

@@ -656,14 +656,14 @@ public class WebProcessManager {
     EXITED
   }
 
-  /** 拒读或标记不匹配只表示未知；只有原boot结束、原PID退出或出生变化才能确认原guest退出。 */
+  /** 拒读或标记不匹配只表示未知；退出核验复用旧 PID 的内核身份退休判据。 */
   public SessionObservation observeSession(
       com.deepseekharness.app.util.WebSessionProof.Saved saved) {
     if (saved == null || records != null) return SessionObservation.UNKNOWN;
     try {
       if (!saved.boot().equals(recoveryBoot())) return SessionObservation.EXITED;
-      var web = recoveryProcess(saved.webPid());
-      if (!web.alive() || web.started() != saved.webStarted()) return SessionObservation.EXITED;
+      if (recordedProcessExited(saved.webPid(), saved.webStarted()))
+        return SessionObservation.EXITED;
       return verifySession(saved) ? SessionObservation.LIVE : SessionObservation.UNKNOWN;
     } catch (IOException | RuntimeException unavailable) {
       return SessionObservation.UNKNOWN;
@@ -675,8 +675,33 @@ public class WebProcessManager {
       throws IOException {
     if (saved == null) return true;
     if (!saved.boot().equals(recoveryBoot())) return true;
-    var process = recoveryProcess(saved.launcherPid());
-    return !process.alive() || process.started() != saved.launcherStarted();
+    return recordedProcessExited(saved.launcherPid(), saved.launcherStarted());
+  }
+
+  /** 已退出或复用的编号无需读取新进程环境；同一旧进程的拒读继续保留屏障。 */
+  private boolean recordedProcessExited(int pid, long started) throws IOException {
+    String saved = pid + " " + started;
+    ProcessState state = inspect(pid);
+    if (mayRetire(state, saved)) return true;
+    // 主 Web 和启动器均由本应用 UID 启动，沿用普通停止的两次 signal-0 EPERM 核验。
+    // 试运行与普通 /proc 拒读不使用此例外，且本方法始终只读取证据。
+    if (records == null
+        && com.deepseekharness.app.util.WebStopEvidence.mayRetireUnsignalableRecord(
+            com.deepseekharness.app.util.WebStopEvidence.Kind.valueOf(state.kind.name()),
+            state.signalProbeForbidden,
+            pid,
+            saved)) {
+      state = inspect(pid);
+      if (mayRetire(state, saved)
+          || com.deepseekharness.app.util.WebStopEvidence.mayRetireUnsignalableRecord(
+              com.deepseekharness.app.util.WebStopEvidence.Kind.valueOf(state.kind.name()),
+              state.signalProbeForbidden,
+              pid,
+              saved)) return true;
+    }
+    if (state.identity == null || state.kind == Kind.DENIED)
+      throw new IOException("WEB_SESSION_PROCESS_UNREADABLE");
+    return false;
   }
 
   /** 旧记录无法解密时，只读核对同UID的Web启动器已全部消失；绝不按名称发送信号。 */
