@@ -325,7 +325,7 @@ final class NativeChatRichMarkdown {
     return Math.round(value * context.getResources().getDisplayMetrics().density);
   }
 
-  private static void release(View view) {
+  static void release(View view) {
     if (view instanceof TextView) AsyncDrawableScheduler.unschedule((TextView) view);
     if (view instanceof ViewGroup) {
       ViewGroup group = (ViewGroup) view;

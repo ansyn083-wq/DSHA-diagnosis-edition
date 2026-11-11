@@ -37,6 +37,8 @@ import com.deepseekharness.app.util.NativeChatRpc.ModelSelection;
 import com.google.android.material.slider.Slider;
 import com.deepseekharness.app.util.NativeChatStream;
 import com.deepseekharness.app.util.NativeChatTranscript;
+import com.deepseekharness.app.util.NativeChatRenderPlan;
+import com.deepseekharness.app.util.NativeChatRenderQueue;
 import com.deepseekharness.app.util.PreviewPageSession.Identity;
 import com.deepseekharness.app.util.UiText;
 import java.io.IOException;
@@ -136,7 +138,13 @@ final class NativeChatPanel {
       long epoch, Identity identity, NativeChatRpc client, String sessionId) {}
 
   private MessageActionBinding displayedActionBinding;
+  private final java.util.ArrayList<Integer> displayedRowEnds = new java.util.ArrayList<>();
+  private final java.util.ArrayList<View> displayedBodies = new java.util.ArrayList<>();
+  private final NativeChatRenderQueue renderQueue =
+      new NativeChatRenderQueue(
+          task -> main.postDelayed(task, 50), main::removeCallbacks, this::renderTranscript);
   private String displayedPartial = "";
+  private String displayedLiveReasoning = "";
   private Identity identity;
   private volatile long epoch;
   private volatile NativeChatRpc rpc;
@@ -372,7 +380,7 @@ final class NativeChatPanel {
                           if ("session/title".equals(kind) || "turn/end".equals(kind))
                             refreshHistory();
                         }
-                        renderTranscript();
+                        renderQueue.request(!"assistant-stream".equals(jsonText(item, "type")));
                         if (wasRunning != transcript.running()
                             || wasThinking != transcript.thinking()) {
                           renderControls();
@@ -1508,6 +1516,7 @@ final class NativeChatPanel {
   }
 
   private void suspend(Reason reason) {
+    renderQueue.cancel();
     epoch++;
     identity = null;
     closeStream(reason);
@@ -1523,6 +1532,7 @@ final class NativeChatPanel {
     modelOption = null;
     shownModel = null;
     avatar.clear();
+    displayedLiveReasoning = "";
     liveReasoning.showReasoning("");
     message("", "");
     renderControls();
@@ -1633,9 +1643,11 @@ final class NativeChatPanel {
   }
 
   private void renderTranscript() {
+    renderQueue.cancel();
     boolean followBottom = !scroll.canScrollVertically(1);
     MessageActionBinding actionBinding = messageActionBinding();
     List<NativeChatTranscript.Message> next = transcript.messages();
+    List<Long> nextSequences = transcript.messageSequences();
     List<NativeChatDetails.Tool> nextTools = details.tools();
     List<NativeChatDetails.Attachment> nextAttachments = details.attachments();
     if (!actionBinding.equals(displayedActionBinding)
@@ -1644,23 +1656,51 @@ final class NativeChatPanel {
         || !displayedAttachments.equals(nextAttachments)
         || displayedInputTokens != details.inputTokens()
         || displayedOutputTokens != details.outputTokens()
-        || !displayedSequences.equals(details.messageSequences())
+        || !displayedSequences.equals(nextSequences)
         || displayedCanRetry != (details.canRetry() && !retrySuppressed)) {
-      displayed = next;
-      displayedActionBinding = actionBinding;
-      displayedTools = nextTools;
-      displayedAttachments = nextAttachments;
-      displayedInputTokens = details.inputTokens();
-      displayedOutputTokens = details.outputTokens();
-      displayedSequences = details.messageSequences();
-      displayedCanRetry = details.canRetry() && !retrySuppressed;
-      messages.removeAllViews();
-      int messageIndex = 0;
-      for (NativeChatTranscript.Message entry : next) {
-        if (entry.assistant()) addReplyDetails(entry);
+      boolean sameBinding = actionBinding.equals(displayedActionBinding);
+      int prefix =
+          sameBinding
+              ? NativeChatRenderPlan.prefix(displayed, displayedSequences, next, nextSequences)
+              : 0;
+      int keepViews = prefix == 0 ? 0 : displayedRowEnds.get(prefix - 1);
+      var previous = displayed;
+      var previousSequences = displayedSequences;
+      var previousBodies = new java.util.ArrayList<>(displayedBodies);
+      var expanded = new java.util.HashMap<Long, Boolean>();
+      if (sameBinding) {
+        for (int i = 0; i < messages.getChildCount(); i++) {
+          if (messages.getChildAt(i) instanceof NativeChatReasoningView reasoning
+              && reasoning.getTag() instanceof Long sequence)
+            expanded.put(sequence, reasoning.isExpanded());
+        }
+      }
+      // 页脚（用量、附件）与历史正文分开；新增消息只影响后缀。
+      messages.removeViews(keepViews, messages.getChildCount() - keepViews);
+      displayedRowEnds.subList(prefix, displayedRowEnds.size()).clear();
+      displayedBodies.subList(prefix, displayedBodies.size()).clear();
+      for (int messageIndex = prefix; messageIndex < next.size(); messageIndex++) {
+        NativeChatTranscript.Message entry = next.get(messageIndex);
+        long atSeq = NativeChatRenderPlan.sequence(nextSequences, messageIndex);
+        if (entry.assistant()) {
+          boolean wasExpanded = expanded.getOrDefault(atSeq, false);
+          // 流式入口移交给同一条已保存回复时，保留用户当前的展开选择。
+          if (sameBinding
+              && messageIndex >= previous.size()
+              && liveReasoning.isExpanded()
+              && !entry.reasoning().isBlank()
+              && entry.reasoning().equals(displayedLiveReasoning)) wasExpanded = true;
+          addReplyDetails(entry, atSeq, wasExpanded);
+        }
         View line;
         int pad = Math.round(12 * host.getResources().getDisplayMetrics().density);
-        if (entry.assistant()) {
+        if (sameBinding
+            && messageIndex < previous.size()
+            && atSeq == NativeChatRenderPlan.sequence(previousSequences, messageIndex)
+            && entry.assistant() == previous.get(messageIndex).assistant()
+            && entry.text().equals(previous.get(messageIndex).text())) {
+          line = previousBodies.get(messageIndex);
+        } else if (entry.assistant()) {
           line = NativeChatMarkdown.createView(host, entry.text());
         } else {
           TextView text = new TextView(host);
@@ -1684,15 +1724,25 @@ final class NativeChatPanel {
           row.setMarginStart(4 * pad);
           line.setBackgroundResource(R.drawable.gpt_chat_composer);
         }
+        line.setVisibility(entry.text().isBlank() ? View.GONE : View.VISIBLE);
         messages.addView(line, row);
         if (entry.assistant()) addSources(entry.text());
-        long atSeq =
-            messageIndex < details.messageSequences().size()
-                ? details.messageSequences().get(messageIndex)
-                : -1;
         addMessageActions(entry, atSeq);
-        messageIndex++;
+        displayedBodies.add(line);
+        displayedRowEnds.add(messages.getChildCount());
       }
+      for (int i = prefix; i < previousBodies.size(); i++) {
+        View oldBody = previousBodies.get(i);
+        if (!displayedBodies.contains(oldBody)) NativeChatRichMarkdown.release(oldBody);
+      }
+      displayed = next;
+      displayedActionBinding = actionBinding;
+      displayedTools = nextTools;
+      displayedAttachments = nextAttachments;
+      displayedInputTokens = details.inputTokens();
+      displayedOutputTokens = details.outputTokens();
+      displayedSequences = nextSequences;
+      displayedCanRetry = details.canRetry() && !retrySuppressed;
       addAttachmentCards(nextAttachments);
       if (displayedCanRetry)
         messages.addView(
@@ -1713,7 +1763,8 @@ final class NativeChatPanel {
       partial.setText(NativeChatMarkdown.render(running));
     }
     partial.setVisibility(running.isEmpty() ? View.GONE : View.VISIBLE);
-    liveReasoning.showReasoning(transcript.partialReasoning());
+    displayedLiveReasoning = transcript.partialReasoning();
+    liveReasoning.showReasoning(displayedLiveReasoning);
     boolean empty =
         next.isEmpty()
             && running.isEmpty()
@@ -1754,7 +1805,9 @@ final class NativeChatPanel {
         UiText.choose("复制", "Copy"),
         () -> {
           host.getSystemService(android.content.ClipboardManager.class)
-              .setPrimaryClip(android.content.ClipData.newPlainText("DSHA", entry.text()));
+              .setPrimaryClip(
+                  android.content.ClipData.newPlainText(
+                      "DSHA", entry.text().isBlank() ? entry.reasoning() : entry.text()));
           android.widget.Toast.makeText(
                   host, UiText.choose("已复制", "Copied"), android.widget.Toast.LENGTH_SHORT)
               .show();
@@ -1999,7 +2052,8 @@ final class NativeChatPanel {
         .show();
   }
 
-  private void addReplyDetails(NativeChatTranscript.Message entry) {
+  private void addReplyDetails(
+      NativeChatTranscript.Message entry, long sequence, boolean expanded) {
     if (entry.turnMillis() >= 0) {
       TextView time = new TextView(host);
       int pad = Math.round(12 * host.getResources().getDisplayMetrics().density);
@@ -2012,6 +2066,8 @@ final class NativeChatPanel {
     if (!entry.reasoning().isBlank()) {
       var details = new NativeChatReasoningView(host);
       details.showReasoning(entry.reasoning());
+      details.setTag(sequence);
+      details.setExpanded(expanded);
       messages.addView(details);
     }
   }

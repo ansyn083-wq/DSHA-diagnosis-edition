@@ -1,0 +1,114 @@
+{
+  "file": "DSHA-diagnostic-v1.0.0-build218-arm64.apk",
+  "bytes": 294576332,
+  "sha256": "14bb99110861f1b26f451ce5c79d4e2fe8ed41ec290d83015ca5ad1004bf8b60",
+  "package": "dsh.android.client.diagnostics",
+  "versionCode": 218,
+  "versionName": "1.0.0",
+  "certificateSha256": "674f41e24ab38375c2519d3132a6ad30fcf6d49562d8c87c3e74a03c3dd9cf4f",
+  "schemes": [
+    "v1",
+    "v2",
+    "v3"
+  ],
+  "debuggable": false,
+  "minSdk": 30,
+  "abi": "arm64-v8a",
+  "zipAlignment": "16KiB",
+  "zipCrc": "PASS",
+  "sourceBase": "3bbeb6046816fb87888a3e038b724e264b7cc6bd",
+  "sourceChange": "app/build.gradle versionCode 217 -> 218",
+  "tests": [
+    {
+      "name": "com.deepseekharness.app.ui.NativeChatMarkdownLinkTest",
+      "tests": 2,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "com.deepseekharness.app.ui.NativeChatMarkdownTest",
+      "tests": 8,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "com.deepseekharness.app.ui.NativeChatMessageActionsTest",
+      "tests": 16,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "com.deepseekharness.app.util.NativeChatDetailsTest",
+      "tests": 8,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "com.deepseekharness.app.util.NativeChatRenderPlanTest",
+      "tests": 2,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "com.deepseekharness.app.util.NativeChatRenderQueueTest",
+      "tests": 2,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "com.deepseekharness.app.util.NativeChatTranscriptTest",
+      "tests": 14,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0
+    }
+  ],
+  "assets": {
+    "result": "PASS",
+    "assetCount": 488,
+    "generatedAssetCount": 409,
+    "check": "All APK assets match generated runtime assets, merged dependency assets and compiled ART profiles byte-for-byte."
+  },
+  "elf": {
+    "arm64_elf_counts": {
+      "host": 13,
+      "rootfs": 723,
+      "python": 49,
+      "wheels": 21,
+      "python_support": 2,
+      "pnpm": 0,
+      "ubuntu_tools": 106,
+      "dsh": 17
+    },
+    "recovery_archive_sources": {
+      "recovery-rootfs.bin": "offline-rootfs.bin",
+      "recovery-dsh-runtime.bin": "dsh-runtime.bin"
+    },
+    "unaligned_16k": [],
+    "other_architectures": [],
+    "relro_outside_load": [],
+    "limitation": "静态 ELF 检查不能替代真实 16 KB 内核上的 proot / dsh / ADB 运行验证"
+  },
+  "lintVital": "PASS: No issues found",
+  "recovery": "PASS: 22232 files, recoveryId 8bbea7ac92d64a1dba9530df8b5df5535de8fbff5707fc37df9b227e85fcf9f4",
+  "licenses": "PASS: 651 npm package records",
+  "limitations": [
+    "No Android device installation or FPS measurements in this build.",
+    "verify-dsh-upgrade-apk.py could not run because the separately npm-installed raw fixture was absent; the pinned runtime recipe and archive match, and all packaged assets were verified against generated inputs."
+  ],
+  "builtSourceCommit": "66ab9130cab3f6eb072e47aaa0cf545db93e0aed",
+  "repositorySync": {
+    "formatter": "google-java-format 1.22.0",
+    "registeredFiles": 4,
+    "formattedFiles": 9,
+    "javaTokensPreserved": true,
+    "runtimeDescriptorUnchanged": true,
+    "apkAttachment": "pending maintainer upload"
+  }
+}

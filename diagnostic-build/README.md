@@ -1,6 +1,6 @@
 # 独立诊断版构建
 
-当前源码为 build216 / versionName 1.0.0。正常 Android Web 启动延后设备工具初始化，Web 长对话按消息行跳过屏外布局。见 [build216 性能和 APK 核验](../docs/releases/build216.md)与 [build215 验证记录](../docs/releases/build215.md)。
+当前源码为 build218 / versionName 1.0.0。原生思考入口改为箭头展开并保留交接内容，消息渲染复用历史正文、合并流式刷新。见 [build218 构建和核验](../docs/releases/build218.md)。此前 Web 启动和长对话优化见 [build216](../docs/releases/build216.md)。
 
 历史说明：build 211 的分发 APK 是在210底包上局部替换问候类，应用内编译常量可能仍显示210；本候选不沿用此局部替换打包方式。
 

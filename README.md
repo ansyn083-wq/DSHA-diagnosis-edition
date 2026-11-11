@@ -1,6 +1,8 @@
 # DSHA 诊断版
 
-当前源码为 **v1.0.0 / build 216**，应用 ID 为 `dsh.android.client.diagnostics`，Android 11+ / ARM64。
+当前源码为 **v1.0.0 / build 218**，应用 ID 为 `dsh.android.client.diagnostics`，Android 11+ / ARM64。
+
+build218 修复原生思考入口消失、改为箭头展开，并复用历史正文与合并流式刷新。已完整构建同签名 APK，52 项关联回归通过，见 [build218 构建与核验](docs/releases/build218.md)。新版 APK 附件待维护者上传；下方保留 build216 历史下载。
 
 [下载 build216 APK](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/download/v1.0.0build216/DSHA-diagnostic-v1.0.0-build216-arm64.apk) · [build216 预发布页](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/tag/v1.0.0build216)
 
@@ -11,7 +13,7 @@ build216 APK 大小为 294,449,101 字节，SHA-256 为 `b9d21d6f05fc9a99ad55d57
 - 首次未配置用户在服务就绪后获得配置引导，可填写 API Key 或连接账户。已有配置和历史会话保留，通用设置仍可从侧栏进入。
 - 保留问答交互、消息操作与问候语改进；工具执行结果卡片隐藏，但不隐藏问答和授权交互，不删除执行记录。
 
-[构建与固定输入说明](diagnostic-build/README.md) · [build216 性能和 APK 核验](docs/releases/build216.md) · [build215 验证记录](docs/releases/build215.md) · [许可证](LICENSE) · [上游许可证](LICENSE.upstream) · [第三方声明](THIRD_PARTY_NOTICES.md)
+[构建与固定输入说明](diagnostic-build/README.md) · [build218 构建和 APK 核验](docs/releases/build218.md) · [build216 性能基线](docs/releases/build216.md) · [许可证](LICENSE) · [上游许可证](LICENSE.upstream) · [第三方声明](THIRD_PARTY_NOTICES.md)
 
 本次提交提供应用源码、测试、构建工具和必要的小型第三方源码；大型离线输入按构建说明恢复。签名私钥、账号/API凭据、用户数据、原始设备日志和旧本地 Git 历史不包含在仓库中。请使用自己的签名材料构建；与已安装诊断版覆盖升级需要相同证书，仓库不提供原私钥。
 
