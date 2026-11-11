@@ -16,6 +16,7 @@ public final class NativeChatTranscript {
   private static final int MAX_REASONING_CHARS = 256 * 1024;
 
   private final ArrayList<Message> messages = new ArrayList<>();
+  private final ArrayList<Long> messageSequences = new ArrayList<>();
   private final StringBuilder partial = new StringBuilder();
   private final StringBuilder partialReasoning = new StringBuilder();
   private final StringBuilder turnReasoning = new StringBuilder();
@@ -44,6 +45,7 @@ public final class NativeChatTranscript {
   private long cursor = -1;
   private long revision;
   private String attempt;
+  private boolean attemptEnded;
   private long attemptTurn;
   private long attemptStep;
   private int nextChunk;
@@ -52,12 +54,18 @@ public final class NativeChatTranscript {
     return List.copyOf(messages);
   }
 
+  public List<Long> messageSequences() {
+    return List.copyOf(messageSequences);
+  }
+
   public String partial() {
     return partial.toString();
   }
 
   public String partialReasoning() {
-    return partialReasoning.toString();
+    if (turnReasoning.length() == 0) return partialReasoning.toString();
+    if (partialReasoning.length() == 0) return turnReasoning.toString();
+    return turnReasoning + "\n\n" + partialReasoning;
   }
 
   public void apply(JsonObject item) {
@@ -78,6 +86,7 @@ public final class NativeChatTranscript {
 
   private void restore(JsonObject item) {
     messages.clear();
+    messageSequences.clear();
     running = thinking = false;
     startedAt = duration = -1;
     lastReply = -1;
@@ -122,6 +131,16 @@ public final class NativeChatTranscript {
       return;
     }
     if ("turn/end".equals(type)) {
+      // 结束帧可能先于持久消息；没有正文时仍保留模型实际返回的思考。
+      String remaining = partialReasoning();
+      if (!remaining.isBlank()) {
+        messages.add(new Message(true, partial.toString(), remaining, -1));
+        messageSequences.add(event.has("seq") ? -event.get("seq").getAsLong() - 2 : -1L);
+        trimMessages();
+        lastReply = messages.size() - 1;
+      }
+      partial.setLength(0);
+      partialReasoning.setLength(0);
       if (running && startedAt >= 0 && event.has("time")) {
         duration = Math.max(0, event.get("time").getAsLong() - startedAt);
         if (lastReply >= 0) {
@@ -185,21 +204,30 @@ public final class NativeChatTranscript {
           assistant
               ? new Message(true, text.toString(), turnReasoning.toString(), -1)
               : new Message(false, text.toString()));
-      if (messages.size() > 150) {
-        messages.remove(0);
-        if (lastReply >= 0) lastReply--;
-      }
+      messageSequences.add(event.has("seq") ? event.get("seq").getAsLong() : -1L);
+      trimMessages();
       if (assistant) {
         if (running) lastReply = messages.size() - 1;
         turnReasoning.setLength(0);
       }
-    } else if (assistant && !running) {
+    } else if (assistant && !running && turnReasoning.length() > 0) {
+      messages.add(new Message(true, "", turnReasoning.toString(), -1));
+      messageSequences.add(event.has("seq") ? event.get("seq").getAsLong() : -1L);
+      trimMessages();
       turnReasoning.setLength(0);
     }
     if (matchesAttempt) {
       partial.setLength(0);
       partialReasoning.setLength(0);
       thinking = false;
+    }
+  }
+
+  private void trimMessages() {
+    if (messages.size() > 150) {
+      messages.remove(0);
+      messageSequences.remove(0);
+      if (lastReply >= 0) lastReply--;
     }
   }
 
@@ -224,12 +252,16 @@ public final class NativeChatTranscript {
       startAttempt(frame);
       return;
     }
-    if (!frame.get("attemptId").getAsString().equals(attempt)
+    if (attemptEnded || !frame.get("attemptId").getAsString().equals(attempt)
         || frame.get("index").getAsInt() != nextChunk) {
       throw new IllegalArgumentException("DSH assistant attempt mismatch");
     }
-    if ("end".equals(frame.get("type").getAsString())) clearAttempt();
-    else if ("chunk".equals(frame.get("type").getAsString())) {
+    // end 只结束生成状态；对应的 assistant/message 接管正文后再清空。
+    // 新 attempt、快照和 turn/end 都有独立清理边界，不跨重试串用。
+    if ("end".equals(frame.get("type").getAsString())) {
+      attemptEnded = true;
+      thinking = false;
+    } else if ("chunk".equals(frame.get("type").getAsString())) {
       appendDelta(frame.getAsJsonObject("chunk"));
       nextChunk++;
     }
@@ -245,6 +277,7 @@ public final class NativeChatTranscript {
   private void clearAttempt() {
     thinking = false;
     attempt = null;
+    attemptEnded = false;
     nextChunk = 0;
     partial.setLength(0);
     partialReasoning.setLength(0);

@@ -189,6 +189,144 @@ public final class NativeChatTranscriptTest {
     assertEquals("", chat.partialReasoning());
   }
 
+  @Test
+  public void streamEndBeforeCommitKeepsReasoningVisibleAndAttachesItOnce() {
+    NativeChatTranscript chat = reasoningAttempt();
+    apply(chat, """
+        {"type":"assistant-stream","frame":{"type":"end","attemptId":"a","revision":2,"index":1}}
+        """);
+    assertEquals("Compare options.", chat.partialReasoning());
+    apply(chat, """
+        {"type":"event","event":{"type":"assistant/message","seq":1,"data":{"turn":1,"step":0,
+        "message":{"content":[{"type":"text","text":"Answer."}]}}}}
+        """);
+    assertEquals("Compare options.", chat.messages().get(0).reasoning());
+    assertEquals("", chat.partialReasoning());
+  }
+
+  @Test
+  public void reasoningOnlyToolStepRemainsVisibleUntilFinalAnswer() {
+    NativeChatTranscript chat = reasoningAttempt();
+    apply(chat, """
+        {"type":"event","event":{"type":"assistant/message","seq":1,"data":{"turn":1,"step":0,
+        "message":{"content":[{"type":"reasoning","text":"Compare options."},
+        {"type":"tool-call","name":"lookup"}]}}}}
+        """);
+    assertEquals("Compare options.", chat.partialReasoning());
+    apply(chat, """
+        {"type":"assistant-stream","frame":{"type":"end","attemptId":"a","revision":2,"index":1}}
+        """);
+    apply(chat, """
+        {"type":"assistant-stream","frame":{"type":"start","attemptId":"b","revision":3,"turn":1,"step":1}}
+        """);
+    assertEquals("Compare options.", chat.partialReasoning());
+    apply(chat, """
+        {"type":"event","event":{"type":"assistant/message","seq":2,"data":{"turn":1,"step":1,
+        "message":{"content":[{"type":"text","text":"Found it."}]}}}}
+        """);
+    assertEquals("Compare options.", chat.messages().get(0).reasoning());
+    assertEquals("", chat.partialReasoning());
+  }
+
+  @Test
+  public void stoppedReasoningOnlyTurnKeepsAReadableMessage() {
+    NativeChatTranscript chat = reasoningAttempt();
+    apply(chat, """
+        {"type":"assistant-stream","frame":{"type":"end","attemptId":"a","revision":2,"index":1}}
+        """);
+    apply(chat, """
+        {"type":"event","event":{"type":"turn/end","seq":1,"time":2000,
+        "data":{"turn":1,"reason":{"kind":"aborted"}}}}
+        """);
+    assertEquals(1, chat.messages().size());
+    assertEquals("", chat.messages().get(0).text());
+    assertEquals("Compare options.", chat.messages().get(0).reasoning());
+    assertEquals("", chat.partialReasoning());
+  }
+
+  @Test
+  public void aNewAttemptDoesNotReuseFailedAttemptReasoning() {
+    NativeChatTranscript chat = reasoningAttempt();
+    apply(chat, """
+        {"type":"assistant-stream","frame":{"type":"end","attemptId":"a","revision":2,"index":1}}
+        """);
+    apply(chat, """
+        {"type":"assistant-stream","frame":{"type":"start","attemptId":"b","revision":3,"turn":1,"step":0}}
+        """);
+    apply(chat, """
+        {"type":"event","event":{"type":"assistant/message","seq":1,"data":{"turn":1,"step":0,
+        "message":{"content":[{"type":"text","text":"Retried answer."}]}}}}
+        """);
+    assertEquals("", chat.messages().get(0).reasoning());
+  }
+
+  @Test
+  public void lateStreamEndAfterTurnEndDoesNotLoseTheStoppedMessage() {
+    NativeChatTranscript chat = reasoningAttempt();
+    apply(chat, """
+        {"type":"event","event":{"type":"turn/end","seq":1,"time":2000,"data":{"turn":1}}}
+        """);
+    apply(chat, """
+        {"type":"assistant-stream","frame":{"type":"end","attemptId":"a","revision":2,"index":1}}
+        """);
+    assertEquals("Compare options.", chat.messages().get(0).reasoning());
+    assertEquals("", chat.partialReasoning());
+    assertFalse(chat.running());
+  }
+
+  @Test
+  public void chunkAfterEndIsStillRejected() {
+    NativeChatTranscript chat = reasoningAttempt();
+    apply(chat, """
+        {"type":"assistant-stream","frame":{"type":"end","attemptId":"a","revision":2,"index":1}}
+        """);
+    assertThrows(IllegalArgumentException.class, () -> apply(chat, """
+        {"type":"assistant-stream","frame":{"type":"chunk","attemptId":"a","revision":3,"index":1,
+        "chunk":{"type":"reasoning-delta","text":"invalid"}}}
+        """));
+  }
+
+  @Test
+  public void reasoningOnlyRowsDoNotShiftTheNextMessageActionIdentity() {
+    NativeChatTranscript chat = reasoningAttempt();
+    apply(chat, """
+        {"type":"event","event":{"type":"turn/end","seq":1,"time":2000,"data":{"turn":1}}}
+        """);
+    apply(chat, """
+        {"type":"event","event":{"type":"user/message","seq":2,
+        "data":{"content":[{"type":"text","text":"Next question"}]}}}
+        """);
+    assertEquals(2, chat.messageSequences().size());
+    assertTrue(chat.messageSequences().get(0) < 0);
+    assertEquals(Long.valueOf(2), chat.messageSequences().get(1));
+  }
+
+  @Test
+  public void snapshotRestoresReasoningOnlyStoppedTurn() {
+    NativeChatTranscript chat = new NativeChatTranscript();
+    apply(chat, """
+        {"type":"snapshot","cursor":3,"records":[
+        {"event":{"type":"turn/start","seq":1,"time":1000,"data":{"turn":1}}},
+        {"event":{"type":"assistant/message","seq":2,"data":{"turn":1,"step":0,
+        "message":{"content":[{"type":"reasoning","text":"Saved reasoning."}]}}}},
+        {"event":{"type":"turn/end","seq":3,"time":2000,"data":{"turn":1}}}]}
+        """);
+    assertEquals("Saved reasoning.", chat.messages().get(0).reasoning());
+    assertEquals(1000, chat.messages().get(0).turnMillis());
+    assertEquals("", chat.partialReasoning());
+  }
+
+  private static NativeChatTranscript reasoningAttempt() {
+    NativeChatTranscript chat = new NativeChatTranscript();
+    apply(chat, """
+        {"type":"snapshot","cursor":0,"records":[
+          {"event":{"type":"turn/start","seq":0,"time":1000,"data":{"turn":1}}}
+        ],"assistantStream":{"revision":1,"activeAttempt":{"attemptId":"a","turn":1,"step":0,
+          "nextIndex":1,"stream":[{"type":"reasoning-chunks","texts":["Compare options."]}]}}}
+        """);
+    return chat;
+  }
+
   private static void apply(NativeChatTranscript chat, String frame) {
     chat.apply(JsonParser.parseString(frame).getAsJsonObject());
   }

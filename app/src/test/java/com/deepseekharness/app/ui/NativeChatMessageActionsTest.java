@@ -75,6 +75,50 @@ public final class NativeChatMessageActionsTest {
   }
 
   @Test
+  public void reasoningArrowKeepsTouchTargetAndReflectsExpansion() throws Exception {
+    NativeChatReasoningView reasoning = new NativeChatReasoningView(host);
+    messages.addView(reasoning);
+    reasoning.showReasoning("Visible reasoning.");
+    layout(360, 640);
+    LinearLayout header = (LinearLayout) reasoning.getChildAt(0);
+    View arrow = header.getChildAt(0);
+    assertTrue(header.isClickable());
+    assertTrue(header.getHeight() >= 48);
+    assertNotNull(header.getContentDescription());
+    assertEquals(0f, arrow.getRotation(), 0f);
+    assertEquals(View.GONE, reasoning.getChildAt(1).getVisibility());
+    header.performClick();
+    assertEquals(90f, arrow.getRotation(), 0f);
+    assertEquals(View.VISIBLE, reasoning.getChildAt(1).getVisibility());
+    reasoning.showReasoning("Visible reasoning. Updated.");
+    assertTrue(reasoning.isExpanded());
+    header.performClick();
+    assertEquals(View.GONE, reasoning.getChildAt(1).getVisibility());
+  }
+
+  @Test
+  public void appendingReplyKeepsHistoryViewsAndReasoningExpansion() throws Exception {
+    setReasoningTranscript("""
+        {"type":"snapshot","cursor":1,"records":[{"event":{"type":"assistant/message","seq":1,
+        "data":{"message":{"content":[{"type":"reasoning","text":"Compare options."},
+        {"type":"text","text":"First reply."}]}}}}]}
+        """);
+    render();
+    NativeChatReasoningView reasoning = (NativeChatReasoningView) messages.getChildAt(0);
+    reasoning.getChildAt(0).performClick();
+    View body = messages.getChildAt(1);
+    NativeChatTranscript transcript = (NativeChatTranscript) field("transcript");
+    transcript.apply(JsonParser.parseString("""
+        {"type":"event","event":{"type":"assistant/message","seq":2,
+        "data":{"message":{"content":[{"type":"text","text":"Second reply."}]}}}}
+        """).getAsJsonObject());
+    render();
+    assertSame(reasoning, messages.getChildAt(0));
+    assertSame(body, messages.getChildAt(1));
+    assertEquals(View.VISIBLE, reasoning.getChildAt(1).getVisibility());
+  }
+
+  @Test
   public void messageActionsAreIconsWithAccessibleLabelsAndRealTouchTargets() throws Exception {
     appendActions(new NativeChatTranscript.Message(true, "Reply to copy"), 7);
     layout(360, 640);
@@ -324,6 +368,18 @@ public final class NativeChatMessageActionsTest {
 
   private static NativeChatRpc rpc() {
     return new NativeChatRpc("http://127.0.0.1:19876/", "dsh-auth-test=synthetic", () -> false);
+  }
+
+  private void setReasoningTranscript(String source) throws Exception {
+    JsonObject snapshot = JsonParser.parseString(source).getAsJsonObject();
+    ((NativeChatTranscript) field("transcript")).apply(snapshot);
+    ((NativeChatDetails) field("details")).apply(snapshot);
+  }
+
+  private void render() throws Exception {
+    Method method = NativeChatPanel.class.getDeclaredMethod("renderTranscript");
+    method.setAccessible(true);
+    method.invoke(panel);
   }
 
   private void setField(String name, Object value) throws Exception {
