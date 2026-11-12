@@ -217,7 +217,7 @@ public class ScreenOwnershipTest {
     }
   }
 
-  @Test
+  @Test(timeout = 30_000)
   public void queueCapacityRejectsBeforePlatformWork() throws Exception {
     ScreenSerialExecutor serial = new ScreenSerialExecutor();
     CountDownLatch entered = new CountDownLatch(16), release = new CountDownLatch(1);
@@ -225,31 +225,50 @@ public class ScreenOwnershipTest {
     var pool = Executors.newFixedThreadPool(16);
     var futures = new java.util.ArrayList<java.util.concurrent.Future<Integer>>();
     try {
-      for (int i = 0; i < 16; i++)
+      for (int i = 0; i < 16; i++) {
+        AtomicBoolean admitted = new AtomicBoolean();
         futures.add(
             pool.submit(
                 () ->
                     serial.execute(
                         () -> {
-                          entered.countDown();
+                          // 首个请求获锁后会再次检查身份，每个请求只能计入一次。
+                          if (admitted.compareAndSet(false, true)) entered.countDown();
                           return true;
                         },
                         () -> 100,
                         10_000,
                         () -> {
-                          assertTrue(release.await(2, TimeUnit.SECONDS));
+                          release.await();
                           return writes.incrementAndGet();
                         })));
-      assertTrue(entered.await(2, TimeUnit.SECONDS));
+      }
+      assertTrue(entered.await(10, TimeUnit.SECONDS));
+      AtomicInteger overflowCallbacks = new AtomicInteger();
       try {
-        serial.execute(() -> true, () -> 100, 10_000, writes::incrementAndGet);
+        serial.execute(
+            () -> {
+              overflowCallbacks.incrementAndGet();
+              return true;
+            },
+            () -> {
+              overflowCallbacks.incrementAndGet();
+              return 100;
+            },
+            10_000,
+            writes::incrementAndGet);
         fail("queue overflow ran");
       } catch (ScreenSerialExecutor.Refused refused) {
         assertEquals("SCREEN_QUEUE_FULL", refused.code);
       }
+      assertEquals(0, overflowCallbacks.get());
+      assertEquals(0, writes.get());
       release.countDown();
-      for (var future : futures) future.get(2, TimeUnit.SECONDS);
+      for (var future : futures) future.get(10, TimeUnit.SECONDS);
       assertEquals(16, writes.get());
+      assertEquals(
+          Integer.valueOf(17),
+          serial.execute(() -> true, () -> 100, 10_000, writes::incrementAndGet));
     } finally {
       release.countDown();
       pool.shutdownNow();
