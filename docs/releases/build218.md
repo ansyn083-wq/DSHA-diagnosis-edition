@@ -4,7 +4,7 @@
 
 ## 安装包
 
-- 文件：`DSHA-diagnostic-v1.0.0-build218-arm64.apk`
+- 文件：[DSHA-diagnostic-v1.0.0-build218-arm64.apk](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/download/v1.0.0build218/DSHA-diagnostic-v1.0.0-build218-arm64.apk) · [GitHub 预发布页](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/tag/v1.0.0build218)
 - 包名：`dsh.android.client.diagnostics`；版本 `1.0.0` / `218`。
 - Standard Release，非调试，Android 11+ / ARM64。
 - 大小：294,576,332 字节。
@@ -15,7 +15,7 @@
 
 从修订源码完整编译，使用 JDK17、Gradle9.3.1、SDK37、build-tools36.0.0、NDK26.3.11579264。固定资源与当前运行时配方一致，未复用旧 APK 的 dex。构建未签名 Release 后以诊断版原证书签名；不使用正式版 E7E3 签名身份。
 
-APK 对应构建源码提交 `66ab9130cab3f6eb072e47aaa0cf545db93e0aed`。同步仓库时补齐 4 个新增 Java 文件的格式化登记，并按锁定工具整理 9 个文件的排版；工具确认所有 Java token 保持一致，运行时描述符不变。APK 字节和前述摘要保持原值，GitHub APK 附件待维护者上传。
+APK 对应构建源码提交 `66ab9130cab3f6eb072e47aaa0cf545db93e0aed`。同步仓库时补齐 4 个新增 Java 文件的格式化登记，并按锁定工具整理 9 个文件的排版；工具确认所有 Java token 保持一致，运行时描述符不变。APK 字节和前述摘要保持原值。维护者已上传 GitHub APK 附件；2026-11-12 重新下载核对，大小与 SHA-256 均与前述记录一致。本次只确认发布文件身份，不新增真机验收结论。
 
 - `:app:assembleStandardRelease` 通过；Release Lint Vital 无问题。
 - `:app:testStandardDebugUnitTest` 选定 7 类共 52 项通过，零失败、错误或跳过：Transcript 14、RenderPlan 2、RenderQueue 2、Details 8、MessageActions 16、Markdown 8、MarkdownLink 2。

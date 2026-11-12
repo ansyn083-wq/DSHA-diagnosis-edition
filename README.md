@@ -2,11 +2,13 @@
 
 当前源码为 **v1.0.0 / build 218**，应用 ID 为 `dsh.android.client.diagnostics`，Android 11+ / ARM64。
 
-build218 修复原生思考入口消失、改为箭头展开，并复用历史正文与合并流式刷新。已完整构建同签名 APK，52 项关联回归通过，见 [build218 构建与核验](docs/releases/build218.md)。新版 APK 附件待维护者上传；下方保留 build216 历史下载。
+build218 修复原生思考入口消失、改为箭头展开，并复用历史正文与合并流式刷新。已完整构建同签名 APK，52 项关联回归通过，见 [build218 构建与核验](docs/releases/build218.md)。新版 APK 已上传，下载入口如下。
 
-[下载 build216 APK](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/download/v1.0.0build216/DSHA-diagnostic-v1.0.0-build216-arm64.apk) · [build216 预发布页](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/tag/v1.0.0build216)
+[下载 build218 APK](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/download/v1.0.0build218/DSHA-diagnostic-v1.0.0-build218-arm64.apk) · [build218 预发布页](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/tag/v1.0.0build218)
 
-build216 APK 大小为 294,449,101 字节，SHA-256 为 `b9d21d6f05fc9a99ad55d5740d8c584c6657ad0eaf92385d5c73f2b6a31d4088`。
+build218 APK 大小为 294,576,332 字节，SHA-256 为 `14bb99110861f1b26f451ce5c79d4e2fe8ed41ec290d83015ca5ad1004bf8b60`。已下载 GitHub 附件并核对与本版构建记录一致。
+
+[build216 历史版本](https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/tag/v1.0.0build216) 保留；以下为其主要改动：
 
 - build216 延后手机操作和虚拟屏的 MCP 初始化，Web 长对话按消息行跳过屏外布局。
 - 点击侧栏头像直接打开整合的账号与 API 窗口，不再打开通用设置；侧栏不再单独列出账号/API。

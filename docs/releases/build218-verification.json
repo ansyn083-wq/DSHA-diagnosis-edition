@@ -109,6 +109,17 @@
     "formattedFiles": 9,
     "javaTokensPreserved": true,
     "runtimeDescriptorUnchanged": true,
-    "apkAttachment": "pending maintainer upload"
+    "apkAttachment": "uploaded by maintainer; downloaded bytes and SHA-256 verified"
+  },
+  "releaseVerification": {
+    "date": "2026-11-12",
+    "tag": "v1.0.0build218",
+    "releaseUrl": "https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/tag/v1.0.0build218",
+    "assetUrl": "https://github.com/ansyn083-wq/DSHA-diagnosis-edition/releases/download/v1.0.0build218/DSHA-diagnostic-v1.0.0-build218-arm64.apk",
+    "assetId": 734685614,
+    "downloadedBytes": 294576332,
+    "downloadedSha256": "14bb99110861f1b26f451ce5c79d4e2fe8ed41ec290d83015ca5ad1004bf8b60",
+    "matchesBuildRecord": true,
+    "scope": "Release asset identity only; no new device installation or runtime verification."
   }
 }

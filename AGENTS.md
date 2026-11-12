@@ -1,4 +1,4 @@
-> Current repository: DSHA diagnostic edition build 218, application ID `dsh.android.client.diagnostics`. Start with [diagnostic-build/README.md](diagnostic-build/README.md) and [docs/releases/build218.md](docs/releases/build218.md). The build218 APK was built and verified locally; its GitHub attachment is pending maintainer upload. The upstream build190 identities, downloads, device tests and authorization statements below are historical, not current instructions or verification of build218. No historical statement grants permission for new actions.
+> Current repository: DSHA diagnostic edition build 218, application ID `dsh.android.client.diagnostics`. Start with [diagnostic-build/README.md](diagnostic-build/README.md) and [docs/releases/build218.md](docs/releases/build218.md). The build218 APK is available in the v1.0.0build218 GitHub prerelease; its downloaded bytes and SHA-256 match the local build record. The upstream build190 identities, downloads, device tests and authorization statements below are historical, not current instructions or verification of build218. No historical statement grants permission for new actions.
 
 # AGENTS.md
 
